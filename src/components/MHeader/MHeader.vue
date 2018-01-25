@@ -3,11 +3,18 @@
 		<h1 class="logo"></h1>
 		<router-link class="userName" to="/person">A000000000</router-link>
 		<div class="menu"></div>
+		<m-menu></m-menu>
 	</header>
 </template>
 
 <script>
-export default {}
+import MMenu from 'components/MMenu/MMenu'
+
+export default {
+	components: {
+		MMenu
+	}
+}
 </script>
 
 <style scoped lang='stylus' rel='stylesheet/stylus'>
