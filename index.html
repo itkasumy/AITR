@@ -4,6 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<title>aitr</title>
+		<script>
+			var html = document.querySelector('html');
+			var width = html.getBoundingClientRect().width;
+			html.style.fontSize = width / 10 + 'px';
+		</script>
 		<style>
 			html, body {
 				height: 100%;

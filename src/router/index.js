@@ -13,6 +13,24 @@ const routes = [
 	{
 		path: '/person',
 		component: Person
+	},
+	{
+		path: '/trading',
+		component: Trading,
+		children: [
+			{ path: 'buy', component: Buy, name: 'buy' },
+			{ path: 'sell', component: Sell },
+			{ path: '', redirect: { name: 'buy' } }
+		]
+	},
+	{
+		path: '/assetsmanage',
+		component: AssetsManage,
+		children: [
+			{ path: 'spotaccount', component: SpotAccount, name: 'spot' },
+			{ path: 'leveraccount', component: LeverAccount },
+			{ path: '', redirect: { name: 'spot' } }
+		]
 	}
 ]
 
