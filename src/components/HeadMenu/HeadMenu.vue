@@ -16,7 +16,10 @@
 						v-for="(item, index) in menu"
 						:key="index"
 						@click="getMainMenuActiveItem(index)"
-					>{{item.name}}</li>
+					>
+						<router-link class="path" v-if="!item.subMenu" :to="item.path">{{item.name}}</router-link>
+						<router-link class="path" v-else to="">{{item.name}}</router-link>
+					</li>
 				</ul>
 			</div>
 			<div class="submenu-wrapper" v-if="menu[mainMenuActiveItem].subMenu">
@@ -27,7 +30,10 @@
 						v-for="(item, index) in menu[mainMenuActiveItem].subMenu"
 						:key="index"
 						@click="getSubmenuActiveItem(index)"
-					>{{item.name}}</li>
+					>
+						<router-link class="path" v-if="!item.pageRoute" :to="item.path">{{item.name}}</router-link>
+						<router-link class="path" v-else to="">{{item.name}}</router-link>
+					</li>
 				</ul>
 				<div class="line" v-if="menu[mainMenuActiveItem].subMenu[submenuActiveItem].pageRoute"></div>
 				<div class="page-route" v-if="menu[mainMenuActiveItem].subMenu[submenuActiveItem].pageRoute">
@@ -39,7 +45,7 @@
 							:key="index"
 							@click="getRouteActiveItem(index)"
 						>
-							<router-link class="route-item" to="">{{item.name}}</router-link>
+							<router-link class="route-item" :to="item.path">{{item.name}}</router-link>
 						</li>
 					</ul>
 				</div>
@@ -77,18 +83,21 @@ export default {
 		return {
 			menu: [
 				{
-					name: '首页'
+					name: '首页',
+					path: '/'
 				},
 				{
 					name: '币币交易',
 					subMenu: [
 						{
-							name: 'ETH交易'
+							name: 'ETH交易',
+							path: '/coinexchange'
 						}
 					]
 				},
 				{
-					name: '杠杆交易'
+					name: '杠杆交易',
+					path: '/'
 				},
 				{
 					name: '个人中心',
@@ -98,15 +107,15 @@ export default {
 							pageRoute: [
 								{
 									name: '个人信息',
-									path: ''
+									path: '/userinfo'
 								},
 								{
 									name: '个登录密码',
-									path: ''
+									path: '/cgpwd'
 								},
 								{
 									name: '安全码',
-									path: ''
+									path: '/cgsfw'
 								}
 							]
 						},
@@ -149,11 +158,11 @@ export default {
 							pageRoute: [
 								{
 									name: '现货账户',
-									path: ''
+									path: '/assetsmanage/spotaccount'
 								},
 								{
 									name: '杠杆账户',
-									path: ''
+									path: '/assetsmanage/leveraccount'
 								}
 							]
 						}
@@ -163,18 +172,19 @@ export default {
 					name: 'VIP专区',
 					subMenu: [
 						{
-							name: 'VIP中心'
+							name: 'VIP中心',
+							path: '/vip'
 						},
 						{
 							name: '组织架构',
 							pageRoute: [
 								{
 									name: '推荐图',
-									path: ''
+									path: '/organizationchart/recommendchart'
 								},
 								{
 									name: '安置结构图',
-									path: ''
+									path: '/organizationchart/placementchart'
 								}
 							]
 						},
@@ -183,55 +193,56 @@ export default {
 							pageRoute: [
 								{
 									name: '注册母账户',
-									path: ''
+									path: '/registermu'
 								},
 								{
 									name: '注册子账户',
-									path: ''
+									path: '/chonggou'
 								},
 								{
 									name: '购买配置',
-									path: ''
+									path: '/buymatch'
 								},
 								{
 									name: '解绑子账户',
-									path: ''
+									path: '/unbindsubaccount'
 								},
 								{
 									name: '解绑母账户',
-									path: ''
+									path: '/bindmuaccount'
 								}
 							]
 						},
 						{
-							name: '奖金明细'
+							name: '奖金明细',
+							path: '/jiangjindetail'
 						},
 						{
 							name: '我的钱包',
 							pageRoute: [
 								{
 									name: '收益币',
-									path: ''
+									path: '/shouyicoin'
 								},
 								{
 									name: 'USDT',
-									path: ''
+									path: '/usdtcoin'
 								},
 								{
 									name: '重构币',
-									path: ''
+									path: '/chonggoucoin'
 								},
 								{
 									name: '众筹币',
-									path: ''
+									path: '/zhongchou'
 								},
 								{
 									name: '拆分币',
-									path: ''
+									path: '/chaifencoin'
 								},
 								{
 									name: '消费币',
-									path: ''
+									path: '/xiaofeicoin'
 								}
 							]
 						},

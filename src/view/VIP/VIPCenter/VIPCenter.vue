@@ -101,6 +101,7 @@ export default {
 
 <style scoped lang='stylus' rel='stylesheet/stylus'>
 	.vipcenter
+		background url('./BG.png')
 		.vip-content
 			.huobijiaoyi
 				width 100%
@@ -118,7 +119,7 @@ export default {
 						height 1.613333rem
 						padding .293333rem .293333rem 0
 						box-sizing border-box
-						background url('../../assets/币@2x.png') 0 0 / 2.786667rem 1.613333rem no-repeat
+						background url('../../../assets/币@2x.png') 0 0 / 2.786667rem 1.613333rem no-repeat
 						.process-item-title
 							height .4rem
 							line-height .4rem
@@ -175,9 +176,9 @@ export default {
 							width .133333rem
 							height .133333rem
 							&.golden
-								background url('../../assets/goldenDot.png') 0 0 / .133333rem .133333rem no-repeat
+								background url('../../../assets/goldenDot.png') 0 0 / .133333rem .133333rem no-repeat
 							&.gray
-								background url('../../assets/grayDot.png') 0 0 / .133333rem .133333rem no-repeat
+								background url('../../../assets/grayDot.png') 0 0 / .133333rem .133333rem no-repeat
 						&:last-child
 							float right
 							width 1.8rem
@@ -196,7 +197,7 @@ export default {
 						height 1.226667rem
 						box-sizing border-box
 						padding-top .08rem
-						background url('../../assets/Rectangle3Copy5.png') 0 0 / 2.413333rem 1.226667rem no-repeat
+						background url('../../../assets/Rectangle3Copy5.png') 0 0 / 2.413333rem 1.226667rem no-repeat
 						.coin-item-title
 							height .4rem
 							line-height .4rem

@@ -1,7 +1,7 @@
 import axios from 'axios'
 const url = 'http://47.75.6.39:8092/api/v1/'
-export const accessToken = '71FD3E99EC6C0C7076F7C8C821E0FDE9'
-export const accessAccount = 'A00000000E6EAEC41B1CE6D3759AB0EF2202B78DD'
+export const accessToken = '973CF52D912846E11476CF8405338C65'
+export const accessAccount = 'A000000002D99E614BD63245FD22116CBCB88EC49'
 // 充值显示订单信息
 export var orderDataUrl = `${url}cashWallet/rechargeCoin`
 // 订单号显示订单信息
