@@ -1,26 +1,26 @@
 <template>
 	<div class="person">
 		<HeadMenu></HeadMenu>
-		<form action="">
+		<form action="" @submit.prevent="changeUserInfo">
 			<div class="form-content">
 				<div class="m-input">
 					<div class="title">会员账号:</div>
-					<input type="text" name="account" value="A00000000" disabled />
+					<input type="text" name="account" v-model="userInfo.account" disabled />
 				</div>
 
 				<div class="m-input">
 					<div class="title">会员名称:</div>
-					<input type="text" value="34" />
+					<input type="text" ref="nickName" v-model="userInfo.nickname" />
 				</div>
 
 				<div class="m-input">
 					<div class="title">当前级别:</div>
-					<input type="text" value="二星会员" disabled />
+					<input type="text" v-model="userInfo.level" disabled />
 				</div>
 
 				<div class="m-input">
 					<div class="title">邮箱:</div>
-					<input type="text" name="mail" placeholder="输入您的邮箱地址" />
+					<input type="text" ref="email" name="mail" v-model="userInfo.email" placeholder="输入您的邮箱地址" />
 				</div>
 			</div>
 
@@ -32,14 +32,39 @@
 </template>
 
 <script>
+import {getAccountInfo, updateNickname, updateEmail} from 'util/http'
+
 import HeadMenu from 'components/HeadMenu/HeadMenu'
 
 export default {
 	data () {
-		return {}
+		return {
+			userInfo: {}
+		}
 	},
 	components: {
 		HeadMenu
+	},
+	mounted () {
+		this.getUserInfo()
+	},
+	methods: {
+		getUserInfo () {
+			const level = ['一星会员', '二星会员', '三星会员', '四星会员', '五星会员', '六星会员']
+			getAccountInfo().then(res => {
+				if (res.data.code === 0) {
+					res.data.result.level = level[res.data.result.level - 1]
+					this.userInfo = res.data.result
+				}
+			})
+		},
+		changeUserInfo () {
+			let nickName = this.$refs.nickName.value
+			let email = this.$refs.email.value
+			console.log(nickName, email)
+			updateNickname()
+			updateEmail()
+		}
 	}
 }
 </script>

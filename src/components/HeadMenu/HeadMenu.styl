@@ -147,8 +147,13 @@
 			background url('./注销@2x.png') center center / .506667rem .506667rem no-repeat
 		.maccount-wrapper
 			padding-left .8rem
+			&::after
+				display block
+				content ''
+				clear both
 			.account
 				position relative
+				float left
 				width 1.92rem
 				height .8rem
 				line-height .8rem

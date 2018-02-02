@@ -23,14 +23,14 @@
 </template>
 
 <script>
-import axios from 'axios'
+import {Login} from 'util/http'
 
 export default {
 	data () {
 		return {
 			showPwd: false,
 			userName: 'A00000000',
-			userPwd: '123456'
+			userPwd: '11111111'
 		}
 	},
 	methods: {
@@ -39,10 +39,11 @@ export default {
 			params.append('account', this.userName)
 			params.append('pwd', this.userPwd)
 
-			axios.post('http://47.75.6.39:8092/api/v1/login', params).then(res => {
-				console.log(res.data)
-			}).catch(error => {
-				console.log(error)
+			Login(params).then(res => {
+				if (res.data.code === 0) {
+					localStorage.setItem('__token__', JSON.stringify(res.data.result))
+					this.$router.push('/')
+				}
 			})
 		}
 	}

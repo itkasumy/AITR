@@ -2,7 +2,9 @@
 	<div class="head-menu">
 		<header class="header">
 			<div class="logo"></div>
-			<div class="account" v-show="hasLogined" @click="switchAccount">A00000000</div>
+			<div class="account" v-show="hasLogined" @click="switchaccount">
+				{{userAccount}}
+			</div>
 			<router-link class="login-btn" v-show="!hasLogined" to="/login">登录</router-link>
 			<div class="menu-btn" @click="switchMenu"></div>
 		</header>
@@ -54,9 +56,16 @@
 		</div>
 
 		<div class="account-wrapper" v-show="showAccount">
-			<div class="switch"></div>
+			<div class="switch" @click="logOut"></div>
 			<div class="maccount-wrapper">
-				<div class="account">{{account[0].name}}</div>
+				<div
+					class="account"
+					v-for="(item, index) in account"
+					:key="index"
+					@click="getSubAccountActiveItem(index)"
+				>
+					{{item.account}}
+				</div>
 			</div>
 			<div class="line"></div>
 			<div class="subaccount">
@@ -64,10 +73,9 @@
 					<li
 						class="subaccount-item"
 						:class="{'active': subAccountActiveItem === index}"
-						v-for="(item, index) in account[0].subAccount"
+						v-for="(item, index) in subAccount"
 						:key="index"
-						@click="getSubAccountActiveItem(index)"
-					>{{item.name}}</li>
+					>{{item}}</li>
 				</ul>
 			</div>
 			<div class="close-account"></div>
@@ -78,6 +86,8 @@
 </template>
 
 <script>
+import {LoginOut, getMuAccount, switchAccount} from 'util/http'
+
 export default {
 	data () {
 		return {
@@ -279,45 +289,24 @@ export default {
 					]
 				}
 			],
-			account: [
-				{
-					name: '母账户1',
-					subAccount: [
-						{
-							name: '子账户1'
-						},
-						{
-							name: '子账户2'
-						},
-						{
-							name: '子账户3'
-						},
-						{
-							name: '子账户4'
-						},
-						{
-							name: '子账户5'
-						},
-						{
-							name: '子账户6'
-						},
-						{
-							name: '子账户7'
-						},
-						{
-							name: '子账户8'
-						}
-					]
-				}
-			],
+			account: [],
+			subAccount: [],
 			showMenu: false,
 			showAccount: false,
-			hasLogined: true,
+			hasLogined: false,
 			mainMenuActiveItem: 0,
 			submenuActiveItem: 0,
 			routeActiveItem: 0,
-			subAccountActiveItem: 0
+			subAccountActiveItem: 0,
+			userAccount: ''
 		}
+	},
+	mounted () {
+		const token = JSON.parse(localStorage.getItem('__token__'))
+		if (token) {
+			this.hasLogined = true
+		}
+		this.getSubAccount()
 	},
 	methods: {
 		getMainMenuActiveItem (index) {
@@ -336,14 +325,38 @@ export default {
 			this.showAccount = false
 			this.showMenu = !this.showMenu
 		},
-		switchAccount () {
+		switchaccount () {
 			this.showMenu = false
 			this.showAccount = !this.showAccount
 		},
 		getSubAccountActiveItem (index) {
 			this.subAccountActiveItem = index
+
+			let params = new URLSearchParams()
+			params.append('uid', 1)
+			console.log(params)
+
+			switchAccount(params).then(res => {
+				console.log(res.data)
+			})
+		},
+		logOut () {
+			LoginOut().then(res => {
+				if (res.data.code === 0) {
+					this.hasLogined = false
+					this.showAccount = false
+				}
+			})
+		},
+		getSubAccount () {
+			getMuAccount().then(res => {
+				// console.log(res.data)
+				// this.userAccount = res.data.result[0].account
+				this.account = res.data.result
+			})
 		}
-	}
+	},
+	computed: {}
 }
 </script>
 
