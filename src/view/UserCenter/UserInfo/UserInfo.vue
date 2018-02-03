@@ -1,7 +1,7 @@
 <template>
 	<div class="person">
 		<HeadMenu></HeadMenu>
-		<form action="" @submit.prevent="changeUserInfo">
+		<form action="" @submit.prevent="getVerifySafePwd">
 			<div class="form-content">
 				<div class="m-input">
 					<div class="title">会员账号:</div>
@@ -28,18 +28,30 @@
 				<input type="submit" value="确定">
 			</div>
 		</form>
+
+		<div class="mask" v-show="maskShow">
+			<div class="alert-content">
+				<div class="title">输入当前安全码</div>
+				<input class="confirmpwd" ref="confirmPwd" type="password" placeholder="输入您的当前安全码">
+				<div class="decision">
+					<div class="cancel" @click="cancel">取消</div>
+					<div class="decide" @click="changeUserInfo">确定</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 
 <script>
-import {getAccountInfo, updateNickname, updateEmail} from 'util/http'
+import {getAccountInfo, updateNickname, updateEmail, verifySafePwd} from 'util/http'
 
 import HeadMenu from 'components/HeadMenu/HeadMenu'
 
 export default {
 	data () {
 		return {
-			userInfo: {}
+			userInfo: {},
+			maskShow: false
 		}
 	},
 	components: {
@@ -61,9 +73,35 @@ export default {
 		changeUserInfo () {
 			let nickName = this.$refs.nickName.value
 			let email = this.$refs.email.value
-			console.log(nickName, email)
-			updateNickname()
-			updateEmail()
+			let confirmPwd = this.$refs.confirmPwd.value
+			let paramsForGetVerifySafePwd = new URLSearchParams()
+			let paramsForUpdateNickname = new URLSearchParams()
+			let paramsForUpdateEmail = new URLSearchParams()
+			let safePwdToken = ''
+			paramsForGetVerifySafePwd.append('safe_pwd', confirmPwd)
+
+			verifySafePwd(paramsForGetVerifySafePwd).then(res => {
+				safePwdToken = res.data.result.safePwdToken
+				paramsForUpdateNickname.append('safe_pwd_token', safePwdToken)
+				paramsForUpdateNickname.append('nickname', nickName)
+				paramsForUpdateEmail.append('safe_pwd_token', safePwdToken)
+				paramsForUpdateEmail.append('email', email)
+				updateNickname(paramsForUpdateNickname).then(res => {
+					this.$refs.confirmPwd.value = ''
+					this.maskShow = false
+				})
+				updateEmail(paramsForUpdateEmail).then(res => {
+					this.$refs.confirmPwd.value = ''
+					this.maskShow = false
+				})
+			})
+		},
+		cancel () {
+			this.maskShow = false
+			this.$refs.confirmPwd.value = ''
+		},
+		getVerifySafePwd () {
+			this.maskShow = true
 		}
 	}
 }
@@ -122,4 +160,56 @@ export default {
 				color #fff
 				border none
 				font-size .426667rem
+		.mask
+			position fixed
+			z-index 1
+			left 0
+			top 0
+			right 0
+			bottom 0
+			background rgba(0, 0, 0, .5)
+			.alert-content
+				position relative
+				width 7.28rem
+				height 4.426667rem
+				background #FFF
+				left 50%
+				top 50%
+				margin-left -3.64rem
+				margin-top -1.546667rem
+				border-radius .133333rem
+				.title
+					height .56rem
+					line-height .56rem
+					margin 0 auto .64rem auto
+					padding-top .906667rem
+					text-align center
+					font-size .426667rem
+					color #333
+				.confirmpwd
+					display block
+					width 6.293333rem
+					height .8rem
+					padding-left .213333rem
+					margin 0 auto
+					box-sizing border-box
+					border 1px solid #CCC
+					font-size .32rem
+				.decision
+					display flex
+					height 1.12rem
+					box-sizing border-box
+					margin-top .373333rem
+					border-top 1px solid #CCC
+					font-size .373333rem
+					.cancel, .decide
+						width 50%
+						height 1.106667rem
+						text-align center
+						line-height 1.106667rem
+						color #666
+						box-sizing border-box
+					.decide
+						color #FFAE11
+						border-left 1px solid #CCC
 </style>

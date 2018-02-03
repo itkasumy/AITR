@@ -135,3 +135,67 @@ export const updateEmail = (params) => {
 		})
 	})
 }
+
+export const verifyPwd = (params) => {
+	var token = JSON.parse(localStorage.getItem('__token__'))
+	return new Promise((resolve, reject) => {
+		axios.post('/verifyPwd', params, {
+			headers: {
+				'access_account': token.accessAccount,
+				'access_token': token.accessToken
+			}
+		}).then(res => {
+			resolve(res)
+		}).catch(error => {
+			reject(error)
+		})
+	})
+}
+
+export const updatePwd = (params) => {
+	var token = JSON.parse(localStorage.getItem('__token__'))
+	return new Promise((resolve, reject) => {
+		axios.post('/account/updatePwd', params, {
+			headers: {
+				'access_account': token.accessAccount,
+				'access_token': token.accessToken
+			}
+		}).then(res => {
+			resolve(res)
+		}).catch(error => {
+			reject(error)
+		})
+	})
+}
+
+export const updateSafePwd = (params) => {
+	var token = JSON.parse(localStorage.getItem('__token__'))
+	return new Promise((resolve, reject) => {
+		axios.post('/account/updateSafePwd', params, {
+			headers: {
+				'access_account': token.accessAccount,
+				'access_token': token.accessToken
+			}
+		}).then(res => {
+			resolve(res)
+		}).catch(error => {
+			reject(error)
+		})
+	})
+}
+
+export const registerMu = (params) => {
+	var token = JSON.parse(localStorage.getItem('__token__'))
+	return new Promise((resolve, reject) => {
+		axios.post('/register', params, {
+			headers: {
+				'access_account': token.accessAccount,
+				'access_token': token.accessToken
+			}
+		}).then(res => {
+			resolve(res)
+		}).catch(error => {
+			reject(error)
+		})
+	})
+}

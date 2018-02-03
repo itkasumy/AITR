@@ -3,7 +3,7 @@
 		<header class="header">
 			<div class="logo"></div>
 			<div class="account" v-show="hasLogined" @click="switchaccount">
-				{{userAccount}}
+				A00000000
 			</div>
 			<router-link class="login-btn" v-show="!hasLogined" to="/login">登录</router-link>
 			<div class="menu-btn" @click="switchMenu"></div>
@@ -47,11 +47,12 @@
 							:key="index"
 							@click="getRouteActiveItem(index)"
 						>
-							<router-link class="route-item" :to="item.path">{{item.name}}</router-link>
+							<router-link class="route-item" :to="{name: 'coininfo', params:{typeid: index}}" v-if="menu[mainMenuActiveItem].subMenu[submenuActiveItem].name === '我的钱包'">{{item.name}}</router-link>
+							<router-link class="route-item" :to="item.path" v-else>{{item.name}}</router-link>
 						</li>
 					</ul>
 				</div>
-				<div class="close-menu"></div>
+				<div class="close-menu" @click="showMenu = false"></div>
 			</div>
 		</div>
 
@@ -78,10 +79,8 @@
 					>{{item}}</li>
 				</ul>
 			</div>
-			<div class="close-account"></div>
+			<div class="close-account" @click="showAccount = false"></div>
 		</div>
-
-		<div class="mask" v-show="showMenu"></div>
 	</div>
 </template>
 
@@ -231,28 +230,28 @@ export default {
 							name: '我的钱包',
 							pageRoute: [
 								{
-									name: '收益币',
-									path: '/shouyicoin'
+									name: 'USDT',
+									path: '/coininfo'
 								},
 								{
-									name: 'USDT',
-									path: '/usdtcoin'
+									name: '收益币',
+									path: '/coininfo'
 								},
 								{
 									name: '重构币',
-									path: '/chonggoucoin'
+									path: '/coininfo'
 								},
 								{
 									name: '众筹币',
-									path: '/zhongchou'
+									path: '/coininfo'
 								},
 								{
 									name: '拆分币',
-									path: '/chaifencoin'
+									path: '/coininfo'
 								},
 								{
 									name: '消费币',
-									path: '/xiaofeicoin'
+									path: '/coininfo'
 								}
 							]
 						},
@@ -320,6 +319,7 @@ export default {
 		},
 		getRouteActiveItem (index) {
 			this.routeActiveItem = index
+			this.showMenu = false
 		},
 		switchMenu () {
 			this.showAccount = false
@@ -342,7 +342,11 @@ export default {
 		},
 		logOut () {
 			LoginOut().then(res => {
+				if (res.data.code === 10005) {
+					this.$router.push('/login')
+				}
 				if (res.data.code === 0) {
+					localStorage.setItem('__token__', '')
 					this.hasLogined = false
 					this.showAccount = false
 				}

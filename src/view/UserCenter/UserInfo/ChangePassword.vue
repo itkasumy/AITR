@@ -1,16 +1,16 @@
 <template>
 	<div class="changepwd">
 		<HeadMenu></HeadMenu>
-		<form action="">
+		<form action="" @submit.prevent="getVerifySafePwd">
 			<div class="form-content">
 				<div class="m-input">
 					<div class="title">新的密码:</div>
-					<input type="password" name="account" value="输入新的密码" disabled />
+					<input type="password" ref="pwd" name="account" placeholder="输入新的密码" />
 				</div>
 
 				<div class="m-input">
 					<div class="title">确认新密码:</div>
-					<input type="password" value="再次输入新密码" />
+					<input type="password" ref="verifyPwd" placeholder="再次输入新密码" />
 				</div>
 			</div>
 
@@ -19,13 +19,13 @@
 			</div>
 		</form>
 
-		<div class="mask">
+		<div class="mask" v-show="maskShow">
 			<div class="alert-content">
-				<div class="title">输入当前密码</div>
-				<input class="confirmpwd" type="password" placeholder="输入您的当前密码">
+				<div class="title">输入当前安全码</div>
+				<input class="confirmpwd" ref="confirmPwd" type="password" placeholder="输入您的当前安全码">
 				<div class="decision">
-					<div class="cancel">取消</div>
-					<div class="decide">确定</div>
+					<div class="cancel" @click="cancel">取消</div>
+					<div class="decide" @click="changeUserPwd">确定</div>
 				</div>
 			</div>
 		</div>
@@ -33,14 +33,47 @@
 </template>
 
 <script>
+import {verifyPwd, updatePwd} from 'util/http'
+
 import HeadMenu from 'components/HeadMenu/HeadMenu'
 
 export default {
 	data () {
-		return {}
+		return {
+			maskShow: false
+		}
 	},
 	components: {
 		HeadMenu
+	},
+	methods: {
+		changeUserPwd () {
+			let pwd = this.$refs.pwd.value
+			let verifyPwdd = this.$refs.verifyPwd.value
+			let confirmPwd = this.$refs.confirmPwd.value
+			let verifyPwdParams = new URLSearchParams()
+			let updatePwdParams = new URLSearchParams()
+			verifyPwdParams.append('pwd', confirmPwd)
+
+			verifyPwd(verifyPwdParams).then(res => {
+				let pwdToken = res.data.result.pwdToken
+				updatePwdParams.append('pwd', verifyPwdd)
+				updatePwdParams.append('pwd_token', pwdToken)
+				if (pwd === verifyPwdd) {
+					updatePwd(updatePwdParams).then(res => {
+						this.maskShow = false
+						this.$refs.confirmPwd.value = ''
+					})
+				}
+			})
+		},
+		cancel () {
+			this.maskShow = false
+			this.$refs.confirmPwd.value = ''
+		},
+		getVerifySafePwd () {
+			this.maskShow = true
+		}
 	}
 }
 </script>

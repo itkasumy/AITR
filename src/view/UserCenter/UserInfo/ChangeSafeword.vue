@@ -1,16 +1,16 @@
 <template>
 	<div class="changepwd">
 		<HeadMenu></HeadMenu>
-		<form action="">
+		<form action="" @submit.prevent="getVerifySafePwd">
 			<div class="form-content">
 				<div class="m-input">
 					<div class="title">新的安全码:</div>
-					<input type="password" name="account" value="输入新的安全码" disabled />
+					<input type="password" ref="safecode" name="account" placeholder="输入新的安全码" />
 				</div>
 
 				<div class="m-input">
 					<div class="title">确认新安全码:</div>
-					<input type="password" value="再次输入新安全码" />
+					<input type="password" ref="verifySafecode" placeholder="再次输入新安全码" />
 				</div>
 			</div>
 
@@ -19,13 +19,13 @@
 			</div>
 		</form>
 
-		<div class="mask">
+		<div class="mask" v-show="maskShow">
 			<div class="alert-content">
 				<div class="title">输入当前安全码</div>
-				<input class="confirmpwd" type="password" placeholder="输入您的当前安全码">
+				<input class="confirmpwd" ref="verifySafePwd" type="password" placeholder="输入您的当前安全码">
 				<div class="decision">
-					<div class="cancel">取消</div>
-					<div class="decide">确定</div>
+					<div class="cancel" @click="cancel">取消</div>
+					<div class="decide" @click="changeUserSafePwd">确定</div>
 				</div>
 			</div>
 		</div>
@@ -33,14 +33,48 @@
 </template>
 
 <script>
+import {verifySafePwd, updateSafePwd} from 'util/http'
+
 import HeadMenu from 'components/HeadMenu/HeadMenu'
 
 export default {
 	data () {
-		return {}
+		return {
+			maskShow: false
+		}
 	},
 	components: {
 		HeadMenu
+	},
+	methods: {
+		changeUserSafePwd () {
+			let safecode = this.$refs.safecode.value
+			let verifySafecode = this.$refs.verifySafecode.value
+			let verifySafePwdd = this.$refs.verifySafePwd.value
+			let verifySafePwdParams = new URLSearchParams()
+			let updateSafePwdParams = new URLSearchParams()
+			verifySafePwdParams.append('safe_pwd', verifySafePwdd)
+
+			verifySafePwd(verifySafePwdParams).then(res => {
+				let safePwdToken = res.data.result.safePwdToken
+				updateSafePwdParams.append('safe_pwd', verifySafecode)
+				updateSafePwdParams.append('safe_pwd_token', safePwdToken)
+				console.log(updateSafePwdParams)
+				if (safecode === verifySafecode) {
+					updateSafePwd(updateSafePwdParams).then(res => {
+						this.maskShow = false
+						this.$refs.verifySafePwd.value = ''
+					})
+				}
+			})
+		},
+		cancel () {
+			this.maskShow = false
+			this.$refs.verifySafePwd.value = ''
+		},
+		getVerifySafePwd () {
+			this.maskShow = true
+		}
 	}
 }
 </script>

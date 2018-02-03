@@ -1,12 +1,23 @@
 import axios from 'axios'
 const url = 'http://47.75.6.39:8092/api/v1/'
-export const accessToken = '973CF52D912846E11476CF8405338C65'
-export const accessAccount = 'A000000002D99E614BD63245FD22116CBCB88EC49'
+let info = localStorage.getItem('__token__')
+info = JSON.parse(info)
+export const accessToken = info.accessToken
+export const accessAccount = info.accessAccount
 // 充值显示订单信息
 export var orderDataUrl = `${url}cashWallet/rechargeCoin`
 // 订单号显示订单信息
 export var orderDatasUrl = `${url}cashWallet/getRechargeInfo`
-
+// 获取钱包余额变动记录
+export var getWalletLogUrl = `${url}wallet/getWalletLog`
+// 获取钱包余额
+export var getByWallet = `${url}wallet/getByAccount`
+// 注册币转账
+export var transferRegCoinUrl = `${url}wallet/transferRegCoin`
+// 收益币转账
+export var transferEarCoinUrl = `${url}wallet/transferEarCoin`
+// 验证安全验证码
+export var checkSafeCodeUrl = `${url}verifySafePwd`
 export var getETHprice = function () {
 	return new Promise(function (resolve, reject) {
 		axios.get('https://api.huobi.pro/market/history/kline?symbol=ethusdt&period=1day&size=1').then(res => {

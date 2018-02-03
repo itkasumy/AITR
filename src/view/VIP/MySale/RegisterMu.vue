@@ -1,36 +1,36 @@
 <template>
 	<div class="registermu">
 		<HeadMenu></HeadMenu>
-		<form action="">
+		<form action="" @submit.prevent="registerMuAcc">
 			<div class="form-content">
 				<div class="m-input">
 					<div class="title">会员账号:</div>
-					<input type="text" name="account" placeholder="输入会员账号" />
+					<input type="text" ref="account" name="account" placeholder="输入会员账号" />
 				</div>
 
 				<div class="m-input">
 					<div class="title">会员姓名:</div>
-					<input type="text" placeholder="输入4~16个字符..." />
+					<input type="text" ref="nickname" placeholder="输入4~16个字符..." />
 				</div>
 
 				<div class="m-input">
 					<div class="title">登录密码:</div>
-					<input type="password" placeholder="输入6位数字......" />
+					<input type="password" ref="pwd" placeholder="输入6位数字......" />
 				</div>
 
 				<div class="m-input">
 					<div class="title">确认登录密码:</div>
-					<input type="password" placeholder="与登录密码相同......" />
+					<input type="password" ref="cfmPwd" placeholder="与登录密码相同......" />
 				</div>
 
 				<div class="m-input">
 					<div class="title">登录安全码:</div>
-					<input type="password" placeholder="输入6位数字......" />
+					<input type="password" ref="safepwd" placeholder="输入6位数字......" />
 				</div>
 
 				<div class="m-input">
 					<div class="title">确认登录安全码:</div>
-					<input type="password" placeholder="与登录安全码相同......" />
+					<input type="password" ref="cfmSafepwd" placeholder="与登录安全码相同......" />
 				</div>
 
 				<div class="m-input">
@@ -40,17 +40,17 @@
 
 				<div class="m-input">
 					<div class="title">接点人: <span class="entry">进入<router-link class="jiediantu" to="/">节点图</router-link></span></div>
-					<input type="text" value="09867" disabled />
+					<input type="text" ref="supAccount" value="A000000002" disabled />
 				</div>
 
 				<div class="m-input">
 					<div class="title">市场位置:</div>
-					<input type="text" value="左区" disabled />
+					<input type="text" ref="position" value="左区" disabled />
 				</div>
 
 				<div class="m-input">
 					<div class="title">邮箱:</div>
-					<input type="mail" name="mail" placeholder="输入您的邮箱地址" />
+					<input type="mail" ref="email" name="mail" placeholder="输入您的邮箱地址" />
 				</div>
 
 				<div class="m-input">
@@ -67,6 +67,8 @@
 </template>
 
 <script>
+import {registerMu} from 'util/http'
+
 import HeadMenu from 'components/HeadMenu/HeadMenu'
 
 export default {
@@ -75,6 +77,21 @@ export default {
 	},
 	components: {
 		HeadMenu
+	},
+	methods: {
+		registerMuAcc () {
+			let params = new URLSearchParams()
+			params.append('account', this.$refs.account.value)
+			params.append('nickname', this.$refs.nickname.value)
+			params.append('pwd', this.$refs.pwd.value)
+			params.append('safe_pwd', this.$refs.safepwd.value)
+			params.append('email', this.$refs.email.value)
+			params.append('sup_account', this.$refs.supAccount.value)
+			params.append('position', this.$refs.position.value === '左区' ? 0 : 1)
+			registerMu(params).then(res => {
+				alert('注册成功！')
+			})
+		}
 	}
 }
 </script>

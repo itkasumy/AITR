@@ -63,6 +63,7 @@ const VIPCenter = resolve => {
 		resolve(module)
 	})
 }
+// 资产管理部分
 const OrganizationChart = resolve => {
 	import('view/VIP/OrganizationChart/OrganizationChart').then(module => {
 		resolve(module)
@@ -118,11 +119,13 @@ const USDTCoin = resolve => {
 		resolve(module)
 	})
 }
+// USDT转账
 const USDTTransfer = resolve => {
 	import('view/VIP/MyWallet/G-USDTTransfer').then(module => {
 		resolve(module)
 	})
 }
+// 注册币转账
 const EarningTransfer = resolve => {
 	import('view/VIP/MyWallet/G-EarningTransfer').then(module => {
 		resolve(module)
@@ -153,7 +156,16 @@ const JiangjinDetail = resolve => {
 		resolve(module)
 	})
 }
-
+const CoinInfo = resolve => {
+	import('view/VIP/MyWallet/G-CoinInfo').then(module => {
+		resolve(module)
+	})
+}
+const CoinTransfer = resolve => {
+	import('view/VIP/MyWallet/G-CoinTransfer').then(module => {
+		resolve(module)
+	})
+}
 const routes = [
 	{
 		path: '/',
@@ -287,6 +299,16 @@ const routes = [
 	{
 		path: '/earningtransfer',
 		component: EarningTransfer
+	},
+	{
+		path: '/coininfo/:typeid',
+		component: CoinInfo,
+		name: 'coininfo'
+	},
+	{
+		path: '/cointransfer/:typeid',
+		component: CoinTransfer,
+		name: 'cointransfer'
 	}
 ]
 
