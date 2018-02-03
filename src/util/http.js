@@ -72,6 +72,14 @@ export const switchAccount = (params) => {
 	})
 }
 
+export const getETHprice = () => {
+	return new Promise((resolve, reject) => {
+		axios.get('https://api.huobi.pro/market/history/kline?symbol=ethusdt&period=1day&size=1').then(res => {
+			resolve(res)
+		})
+	})
+}
+
 export const getAccountInfo = () => {
 	var token = JSON.parse(localStorage.getItem('__token__'))
 	return new Promise((resolve, reject) => {

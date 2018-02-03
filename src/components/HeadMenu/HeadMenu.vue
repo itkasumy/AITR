@@ -1,7 +1,7 @@
 <template>
 	<div class="head-menu">
 		<header class="header">
-			<div class="logo"></div>
+			<router-link to="/index"><div class="logo"></div></router-link>
 			<div class="account" v-show="hasLogined" @click="switchaccount">
 				A00000000
 			</div>
@@ -9,52 +9,54 @@
 			<div class="menu-btn" @click="switchMenu"></div>
 		</header>
 
-		<div class="menu-wrapper" v-if="showMenu">
-			<div class="main-menu">
-				<ul>
-					<li
-						class="main-menu-item"
-						:class="{'active': mainMenuActiveItem === index}"
-						v-for="(item, index) in menu"
-						:key="index"
-						@click="getMainMenuActiveItem(index)"
-					>
-						<router-link class="path" v-if="!item.subMenu" :to="item.path">{{item.name}}</router-link>
-						<router-link class="path" v-else to="">{{item.name}}</router-link>
-					</li>
-				</ul>
-			</div>
-			<div class="submenu-wrapper" v-if="menu[mainMenuActiveItem].subMenu">
-				<ul class="submenu">
-					<li
-						class="submenu-item"
-						:class="{'active': submenuActiveItem === index}"
-						v-for="(item, index) in menu[mainMenuActiveItem].subMenu"
-						:key="index"
-						@click="getSubmenuActiveItem(index)"
-					>
-						<router-link class="path" v-if="!item.pageRoute" :to="item.path">{{item.name}}</router-link>
-						<router-link class="path" v-else to="">{{item.name}}</router-link>
-					</li>
-				</ul>
-				<div class="line" v-if="menu[mainMenuActiveItem].subMenu[submenuActiveItem].pageRoute"></div>
-				<div class="page-route" v-if="menu[mainMenuActiveItem].subMenu[submenuActiveItem].pageRoute">
-					<ul class="route-wrapper">
+		<keep-alive>
+			<div class="menu-wrapper" v-if="showMenu">
+				<div class="main-menu">
+					<ul>
 						<li
-							class="route-content"
-							:class="{'active': routeActiveItem === index}"
-							v-for="(item, index) in menu[mainMenuActiveItem].subMenu[submenuActiveItem].pageRoute"
+							class="main-menu-item"
+							:class="{'active': mainMenuActiveItem === index}"
+							v-for="(item, index) in menu"
 							:key="index"
-							@click="getRouteActiveItem(index)"
+							@click="getMainMenuActiveItem(index)"
 						>
-							<router-link class="route-item" :to="{name: 'coininfo', params:{typeid: index}}" v-if="menu[mainMenuActiveItem].subMenu[submenuActiveItem].name === '我的钱包'">{{item.name}}</router-link>
-							<router-link class="route-item" :to="item.path" v-else>{{item.name}}</router-link>
+							<router-link class="path" v-if="!item.subMenu" :to="item.path">{{item.name}}</router-link>
+							<router-link class="path" v-else to="">{{item.name}}</router-link>
 						</li>
 					</ul>
 				</div>
-				<div class="close-menu" @click="showMenu = false"></div>
+				<div class="submenu-wrapper" v-if="menu[mainMenuActiveItem].subMenu">
+					<ul class="submenu">
+						<li
+							class="submenu-item"
+							:class="{'active': submenuActiveItem === index}"
+							v-for="(item, index) in menu[mainMenuActiveItem].subMenu"
+							:key="index"
+							@click.prevent="getSubmenuActiveItem(index)"
+						>
+							<router-link class="path" v-if="!item.pageRoute" :to="item.path">{{item.name}}</router-link>
+							<router-link class="path" v-else to="">{{item.name}}</router-link>
+						</li>
+					</ul>
+					<div class="line" v-if="menu[mainMenuActiveItem].subMenu[submenuActiveItem].pageRoute"></div>
+					<div class="page-route" v-if="menu[mainMenuActiveItem].subMenu[submenuActiveItem].pageRoute">
+						<ul class="route-wrapper">
+							<li
+								class="route-content"
+								:class="{'active': routeActiveItem === index}"
+								v-for="(item, index) in menu[mainMenuActiveItem].subMenu[submenuActiveItem].pageRoute"
+								:key="index"
+								@click.prevent="getRouteActiveItem(index)"
+							>
+								<router-link class="route-item" :to="{name: 'coininfo', params:{typeid: index}}" v-if="menu[mainMenuActiveItem].subMenu[submenuActiveItem].name === '我的钱包'">{{item.name}}</router-link>
+								<router-link class="route-item" :to="item.path" v-else>{{item.name}}</router-link>
+							</li>
+						</ul>
+					</div>
+					<div class="close-menu" @click="showMenu = false"></div>
+				</div>
 			</div>
-		</div>
+		</keep-alive>
 
 		<div class="account-wrapper" v-show="showAccount">
 			<div class="switch" @click="logOut"></div>
@@ -93,16 +95,16 @@ export default {
 			menu: [
 				{
 					name: '首页',
-					path: '/'
-				},
-				{
-					name: '币币交易',
 					subMenu: [
 						{
 							name: 'ETH交易',
 							path: '/coinexchange'
 						}
 					]
+				},
+				{
+					name: '币币交易',
+					path: '/'
 				},
 				{
 					name: '杠杆交易',
@@ -119,46 +121,12 @@ export default {
 									path: '/userinfo'
 								},
 								{
-									name: '个登录密码',
+									name: '登录密码',
 									path: '/cgpwd'
 								},
 								{
 									name: '安全码',
 									path: '/cgsfw'
-								}
-							]
-						},
-						{
-							name: '收款账号',
-							pageRoute: [
-								{
-									name: '个人信息',
-									path: ''
-								},
-								{
-									name: '个登录密码',
-									path: ''
-								},
-								{
-									name: '安全码',
-									path: ''
-								}
-							]
-						},
-						{
-							name: 'C2C交易',
-							pageRoute: [
-								{
-									name: '个人信息',
-									path: ''
-								},
-								{
-									name: '个登录密码',
-									path: ''
-								},
-								{
-									name: '安全码',
-									path: ''
 								}
 							]
 						},

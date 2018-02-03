@@ -37,6 +37,8 @@
 </template>
 
 <script>
+import {getETHprice} from 'util/http'
+
 import HeadMenu from 'components/HeadMenu/HeadMenu'
 
 export default {
@@ -45,8 +47,18 @@ export default {
 			list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 		}
 	},
+	mounted () {
+		this.getETHCurrentPrc()
+	},
 	components: {
 		HeadMenu
+	},
+	methods: {
+		getETHCurrentPrc () {
+			getETHprice().then(res => {
+				console.log(res.data)
+			})
+		}
 	}
 }
 </script>
