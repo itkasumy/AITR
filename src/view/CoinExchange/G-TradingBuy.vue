@@ -1,6 +1,6 @@
 <template>
 	<div class="buy">
-		<g-trad-part :types="'buy'" @tradClick="tradClick"></g-trad-part>
+		<g-trad-part :types="'buy'" @tradClick="tradClick" :price="price"></g-trad-part>
 		<g-trad-history :types="'buy'"></g-trad-history>
 		<g-alert v-if="isShowDialog" @options="options"></g-alert>
 	</div>
@@ -10,11 +10,20 @@
 import GTradHistory from 'components/GTradHistory/GTradHistory'
 import GTradPart from 'components/GTradPart/GTradPart'
 import GAlert from 'components/GAlert/GAlert'
+import {getETHprice} from '../../api/GApi'
 export default {
 	data () {
 		return {
-			isShowDialog: false
+			isShowDialog: false,
+			price: 0
 		}
+	},
+	created () {
+		this.getNewPrc()
+		const that = this
+		setInterval(() => {
+			that.getNewPrc()
+		}, 5000)
 	},
 	components: {
 		GTradHistory,
@@ -28,6 +37,11 @@ export default {
 		},
 		tradClick () {
 			this.isShowDialog = true
+		},
+		getNewPrc () {
+			getETHprice().then(res => {
+				this.price = res.data.data[0].close
+			})
 		}
 	}
 }

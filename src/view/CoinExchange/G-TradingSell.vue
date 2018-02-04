@@ -55,10 +55,11 @@ export default {
 		}
 	},
 	created () {
-		getETHprice().then(res => {
-			console.log(res.data.data)
-			this.price = res.data.data[0].open
-		})
+		this.getNewPrc()
+		const that = this
+		setInterval(() => {
+			that.getNewPrc()
+		}, 5000)
 	},
 	components: {
 		GTradHistory,
@@ -74,6 +75,11 @@ export default {
 			this.isShowDialog = true
 			console.log(msg)
 			this.numbers = parseFloat(msg.number)
+		},
+		getNewPrc () {
+			getETHprice().then(res => {
+				this.price = res.data.data[0].close
+			})
 		}
 	}
 }

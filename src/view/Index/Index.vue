@@ -10,19 +10,20 @@
 						<ul class="item-ct">
 							<li class="item-name">
 								<div class="name-top">
-									<span class="current-coin">ETH</span> / <span class="usdollar">USDT</span>
+									<span class="current-coin">{{item.name}}</span> / <span class="usdollar">USDT</span>
 								</div>
-								<div class="current-price">15576.29</div>
+								<div class="close-price">{{item.market.close.toFixed(2)}}</div>
+								<router-link to="/coinexchange" class="to-trade" v-if="item.onTrade">去交易</router-link>
 							</li>
 							<li class="item-price">
-								<div class="price-high">15962.11</div>
+								<div class="price-high">{{item.market.high.toFixed(2)}}</div>
 								<div class="price-line"></div>
-								<div class="price-low">14864.35</div>
+								<div class="price-low">{{item.market.low.toFixed(2)}}</div>
 							</li>
 							<li class="item-count">
 								<div class="count-top">
 									<div class="count-title">成交量</div>
-									<div class="count">2470.1741 BTC</div>
+									<div class="count">{{item.market.amount.toFixed(2)}} BTC</div>
 								</div>
 								<div class="count-line"></div>
 								<div class="count-percent">+3.72% <span class="derection"></span></div>
@@ -44,11 +45,128 @@ import HeadMenu from 'components/HeadMenu/HeadMenu'
 export default {
 	data () {
 		return {
-			list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+			list: [
+				{
+					name: 'ETH',
+					onTrade: true,
+					market: {
+						amount: 18757,
+						close: 15576.29,
+						count: 22411,
+						high: 986,
+						id: 1517673600,
+						low: 938,
+						open: 15576.29,
+						vol: 18064705
+					}
+				},
+				{
+					name: 'BTC',
+					onTrade: false,
+					market: {
+						amount: 18757,
+						close: 15576.29,
+						count: 22411,
+						high: 986,
+						id: 1517673600,
+						low: 938,
+						open: 15576.29,
+						vol: 18064705
+					}
+				},
+				{
+					name: 'LTC',
+					onTrade: false,
+					market: {
+						amount: 18757,
+						close: 15576.29,
+						count: 22411,
+						high: 986,
+						id: 1517673600,
+						low: 938,
+						open: 15576.29,
+						vol: 18064705
+					}
+				},
+				{
+					name: 'BCH',
+					onTrade: false,
+					market: {
+						amount: 18757,
+						close: 15576.29,
+						count: 22411,
+						high: 986,
+						id: 1517673600,
+						low: 938,
+						open: 15576.29,
+						vol: 18064705
+					}
+				},
+				{
+					name: 'XRP',
+					onTrade: false,
+					market: {
+						amount: 18757,
+						close: 15576.29,
+						count: 22411,
+						high: 986,
+						id: 1517673600,
+						low: 938,
+						open: 15576.29,
+						vol: 18064705
+					}
+				},
+				{
+					name: 'DASH',
+					onTrade: false,
+					market: {
+						amount: 18757,
+						close: 15576.29,
+						count: 22411,
+						high: 986,
+						id: 1517673600,
+						low: 938,
+						open: 15576.29,
+						vol: 18064705
+					}
+				},
+				{
+					name: 'EOS',
+					onTrade: false,
+					market: {
+						amount: 18757,
+						close: 15576.29,
+						count: 22411,
+						high: 986,
+						id: 1517673600,
+						low: 938,
+						open: 15576.29,
+						vol: 18064705
+					}
+				},
+				{
+					name: 'ETC',
+					onTrade: false,
+					market: {
+						amount: 18757,
+						close: 15576.29,
+						count: 22411,
+						high: 986,
+						id: 1517673600,
+						low: 938,
+						open: 15576.29,
+						vol: 18064705
+					}
+				}
+			]
 		}
 	},
 	mounted () {
 		this.getETHCurrentPrc()
+		let that = this
+		setInterval(() => {
+			that.getETHCurrentPrc()
+		}, 5000)
 	},
 	components: {
 		HeadMenu
@@ -56,7 +174,8 @@ export default {
 	methods: {
 		getETHCurrentPrc () {
 			getETHprice().then(res => {
-				console.log(res.data)
+				console.log(res.data.data[0])
+				this.list[0].market = res.data.data[0]
 			})
 		}
 	}
@@ -89,126 +208,148 @@ export default {
 			.title
 				position relative
 				width 100%
-				height 40px
-				line-height 40px
+				height 1.066667rem
+				line-height 1.066667rem
 				text-align center
 				background-image linear-gradient(-180deg, #FFCD00 0%, #FFCA00 100%)
-				box-shadow 0px 2px 4px 0px rgba(0, 0, 0, 0.5)
-				font-size 14px
+				box-shadow 0 .026667rem .053333rem 0 rgba(0, 0, 0, 0.5)
+				font-size .373333rem
 				color #333
 			.ct-wrapper
 				height 100%
-				padding-top 5px
+				padding-top .133333rem
 				.content
-					padding 0 0 20px 25px
+					padding 0 0 .533333rem .666667rem
 					.item-wrapper
-						padding-top 10px
+						padding-top .266667rem
 						overflow hidden
 						.item-name
 							float left
 							position relative
-							width 97px
-							height 90px
+							width 2.586667rem
+							height 2.4rem
 							background-image linear-gradient(-180deg, #4A4A4A 0%, #000 100%)
-							box-shadow 0 2px 4px 0 #999, inset 0 -1px 0 0 #CCC
-							margin-right 6px
-							border-radius 2px
+							box-shadow 0 .026667rem .053333rem 0 #999, inset 0 -1px 0 0 #CCC
+							margin-right .173333rem
+							border-radius .053333rem
 							opacity .9
 							.name-top
-								height 18px
-								line-height 18px
-								padding-top 25px
+								height .24rem
+								line-height .24rem
+								padding-top .666667rem
 								text-align center
-								font-size 14px
+								font-size .373333rem
 								color #FFF
 								letter-spacing 0
-							.current-price
-								padding-top 7px
-								height 16px
-								line-height 16px
+							.close-price
+								padding-top .186667rem
+								height .413333rem
+								line-height .413333rem
 								text-align center
-								font-size 12px
+								font-size .32rem
 								color #FFCA00
+							.to-trade
+								position absolute
+								left 0
+								bottom 0
+								width 100%
+								height .506667rem
+								line-height .506667rem
+								background #FFCA00
+								text-align center
+								color #FFF
+								font-size .213333rem
+								&::after
+									position absolute
+									content ''
+									top .12rem
+									right .64rem
+									width .266667rem
+									height .266667rem
+									background #FFF
 						.item-price
 							float left
 							position relative
-							width 106px
-							height 86px
-							padding 2px
+							width 2.933333rem
+							height 2.4rem
+							padding .053333rem
+							box-sizing border-box
 							background #FFF
-							margin-right 3px
-							border-radius 2px
-							box-shadow 0 1px 2px 0 #CCC
+							margin-right .066667rem
+							border-radius .053333rem
+							box-shadow 0 .026667rem .053333rem 0 #CCC
 							&::before
 								position absolute
 								content ''
-								width 28px
-								height 28px
+								width .746667rem
+								height .746667rem
 								left 0
 								top 0
-								background url('./high@0.96x.png') 0 0 / 28px 28px no-repeat
+								background url('./high@0.96x.png') 0 0 / .746667rem .746667rem no-repeat
 							&::after
 								position absolute
 								content ''
-								width 28px
-								height 28px
+								width .746667rem
+								height .746667rem
 								right 0
 								bottom 0
-								background url('./low@0.96x.png') 0 0 / 28px 28px no-repeat
+								background url('./low@0.96x.png') 0 0 / .746667rem .746667rem no-repeat
 							.price-high
-								height 42px
-								line-height 42px
+								height 1.12rem
+								line-height 1.12rem
 								text-align center
-								font-size 14px
+								font-size .373333rem
 								color #333
 							.price-line
 								height 0
 								border-bottom 1px solid #FFCA00
 							.price-low
-								height 42px
-								line-height 42px
+								height 1.12rem
+								line-height 1.12rem
 								text-align center
-								font-size 14px
+								font-size .373333rem
 								color #333
 						.item-count
 							float left
 							position relative
-							width 106px
-							height 86px
-							padding 2px
+							width 2.933333rem
+							height 2.4rem
+							padding .053333rem
+							box-sizing border-box
 							background #FFF
-							border-radius 2px
-							box-shadow 0 1px 2px 0 #CCC
+							border-radius .053333rem
+							box-shadow 0 .026667rem .053333rem 0 #CCC
 							.count-top
-								height 42px
+								height 1.12rem
 								.count-title
-									height 13px
+									height .346667rem
 									padding 1px 0 1px 0
 									text-align center
-									font-size 10px
+									font-size .266667rem
 									color #FFCA00
 								.count
-									height 15px
-									padding 6px 0 6px 0
+									height .413333rem
+									line-height .413333rem
+									padding .08rem 0 .08rem 0
 									text-align center
-									font-size 12px
+									font-size .32rem
 									color #333
 							.count-line
 								height 0
 								border-bottom 1px solid #FFCA00
 							.count-percent
-								height 42px
-								line-height 42px
+								height 1.12rem
+								line-height 1.12rem
 								text-align center
-								font-size 14px
+								font-size .373333rem
 								color #FFCA00
 								span
 									display inline-block
-									width 14px
-									height 14px
+									width .373333rem
+									height .373333rem
 									vertical-align middle
-									background url('./上升.png') center center / 10px 12px no-repeat
+									background url('./上升.png') left top / .266667rem .32rem no-repeat
 		.bt-banner
 			height 184px
-			background url('./底部banner.png') top center / 100% 184px no-repeat
+			background url('./底部banner.png') top center / 100%  2.453333rem no-repeat
 </style>

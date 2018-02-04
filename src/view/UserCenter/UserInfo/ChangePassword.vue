@@ -141,9 +141,10 @@ export default {
 				height 4.426667rem
 				background #FFF
 				left 50%
-				top 50%
+				// top 50%
+				top 6.493333rem
 				margin-left -3.64rem
-				margin-top -1.546667rem
+				// margin-top -1.546667rem
 				border-radius .133333rem
 				.title
 					height .56rem

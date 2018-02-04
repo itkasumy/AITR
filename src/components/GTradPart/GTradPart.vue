@@ -5,13 +5,13 @@
 				<span>{{types==="buy"?'买入价':'卖出价'}}</span>
 			</div>
 			<div>
-				<input type="text" class="buy-inp-price" :placeholder="{price}" :class="{buypart:types==='buy',sellpart:types==='sell'}" v-model="prices">
+				<input type="text" class="buy-inp-price" :placeholder="{price}" :class="{buypart:types==='buy',sellpart:types==='sell'}" v-model="prices" disabled>
 			</div>
 			<div class="text">
 				<span>{{types==="buy"?'买入量':'卖出量'}}</span>
 			</div>
 			<div>
-				<input type="text" class="buy-inp-num" placeholder="0" :class="{buypart:types==='buy',sellpart:types==='sell'}" v-model="numbers">
+				<input type="number" class="buy-inp-num" placeholder="0" :class="{buypart:types==='buy',sellpart:types==='sell'}" v-model="numbers">
 			</div>
 			<div class="total">
 					<span>合计: </span><span :style="{color: types==='buy'?'#FFAE11':'#4A90E2'}">&nbsp;{{numbers*prices}}&nbsp;</span><span> USDT</span>

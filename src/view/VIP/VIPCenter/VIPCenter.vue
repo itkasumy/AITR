@@ -6,7 +6,7 @@
 				<div class="vip-title">货币交易</div>
 				<div class="process-container">
 					<div class="process-item">
-						<div class="process-item-title">USDT</div>
+						<div class="process-item-title">注册币</div>
 						<div class="process-item-price">15000.000</div>
 					</div>
 
