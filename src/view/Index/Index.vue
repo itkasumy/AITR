@@ -12,7 +12,9 @@
 								<div class="name-top">
 									<span class="current-coin">{{item.name}}</span> / <span class="usdollar">USDT</span>
 								</div>
-								<div class="close-price">{{item.market.close.toFixed(2)}}</div>
+								<div class="close-price add" v-if="item.market.close - item.market.open > 0">{{item.market.close.toFixed(2)}}</div>
+								<div class="close-price min" v-else-if="item.market.close - item.market.open < 0">{{item.market.close.toFixed(2)}}</div>
+								<div class="close-price" v-else>{{item.market.close.toFixed(2)}}</div>
 								<router-link to="/coinexchange" class="to-trade" v-if="item.onTrade">去交易</router-link>
 							</li>
 							<li class="item-price">
@@ -26,7 +28,9 @@
 									<div class="count">{{item.market.amount.toFixed(2)}} BTC</div>
 								</div>
 								<div class="count-line"></div>
-								<div class="count-percent">+3.72% <span class="derection"></span></div>
+								<div class="count-percent add" v-if="item.market.close - item.market.open > 0">{{((item.market.close - item.market.open) / item.market.open * 100).toFixed(2) + '%'}} <span class="derection add"></span></div>
+								<div class="count-percent min" v-else-if="item.market.close - item.market.open < 0">{{((item.market.close - item.market.open) / item.market.open * 100).toFixed(2) + '%'}} <span class="derection min"></span></div>
+								<div class="count-percent" v-else>+3.7% <span class="derection add"></span></div>
 							</li>
 						</ul>
 					</li>
@@ -248,6 +252,10 @@ export default {
 								text-align center
 								font-size .32rem
 								color #FFCA00
+								&.add
+									color #FFCA00
+								&.min
+									color #4A90E2
 							.to-trade
 								position absolute
 								left 0
@@ -266,7 +274,7 @@ export default {
 									right .64rem
 									width .266667rem
 									height .266667rem
-									background #FFF
+									background url('../../assets/返回@2x.png') center center / .266667rem .266667rem no-repeat
 						.item-price
 							float left
 							position relative
@@ -343,12 +351,19 @@ export default {
 								text-align center
 								font-size .373333rem
 								color #FFCA00
+								&.add
+									color #FFCA00
+								&.min
+									color #4A90E2
 								span
 									display inline-block
 									width .373333rem
 									height .373333rem
 									vertical-align middle
-									background url('./上升.png') left top / .266667rem .32rem no-repeat
+									&.add
+										background url('./上升.png') left top / .266667rem .32rem no-repeat
+									&.min
+										background url('./下降.png') left top / .266667rem .32rem no-repeat
 		.bt-banner
 			height 184px
 			background url('./底部banner.png') top center / 100%  2.453333rem no-repeat
