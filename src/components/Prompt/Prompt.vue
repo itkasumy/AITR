@@ -35,4 +35,5 @@ export default {
 			background rgba(0, 0, 0 .5)
 			border-radius .08rem
 			color #FFF
+			font-size .213333rem
 </style>

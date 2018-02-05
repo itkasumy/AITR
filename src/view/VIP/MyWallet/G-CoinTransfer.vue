@@ -48,14 +48,16 @@
 				输入安全码
 			</div>
 			<div>
-				<input type="text" placeholder="输入您的安全码" :style="alertStyle" v-model="safeCode">
+				<input type="password" placeholder="输入您的安全码" :style="alertStyle" v-model="safeCode">
 			</div>
 		</g-alert>
+		<prompt :tip="tip" v-show="showTip"></prompt>
 	</div>
 </template>
 
 <script>
 import HeadMenu from 'components/HeadMenu/HeadMenu'
+import Prompt from 'components/Prompt/Prompt'
 import {accessToken, accessAccount, getByWallet, transferRegCoinUrl, transferEarCoinUrl, checkSafeCodeUrl} from '../../../api/GApi'
 import axios from 'axios'
 import GAlert from 'components/GAlert/GAlert'
@@ -84,7 +86,9 @@ export default {
 			transformInfo: {
 				userId: null,
 				coinNum: null
-			}
+			},
+			showTip: false,
+			tip: ''
 		}
 	},
 	created () {
@@ -108,7 +112,8 @@ export default {
 	},
 	components: {
 		HeadMenu,
-		GAlert
+		GAlert,
+		Prompt
 	},
 	methods: {
 		callbackUrl () {
@@ -156,16 +161,15 @@ export default {
 						}).then(res => {
 							console.log(res)
 							if (res.data.code === 0) {
-								// 转账成功
-								console.log('转账成功')
-								console.log(res)
+								this.tipShow(res.data.msg)
 							} else {
-								// 转账失败
-								console.log('转账失败')
+								this.tipShow(res.data.msg)
 							}
 						})
 					} else {
 						// 安全码验证失败
+						this.safeCode = ''
+						this.tipShow(res.data.msg)
 					}
 				})
 			}
@@ -174,6 +178,13 @@ export default {
 			if (this.transformInfo.userId && this.transformInfo.coinNum) {
 				this.showSafeCodeAlert = true
 			}
+		},
+		tipShow (msg) {
+			this.showTip = true
+			this.tip = msg
+			setTimeout(() => {
+				this.showTip = false
+			}, 1500)
 		}
 	}
 }
@@ -181,6 +192,7 @@ export default {
 
 <style scoped lang="stylus">
 .earning-transfer
+	height 100%
 	.header
 		height: 1.306667rem
 		background-color :#000000
@@ -242,7 +254,7 @@ export default {
 					font-size :.373333rem
 					box-sizing :border-box
 		.bottom
-			position :absolute
+			position :fixed
 			bottom :0
 			height :1.333333rem
 			display :flex

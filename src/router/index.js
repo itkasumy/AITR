@@ -242,6 +242,7 @@ const routes = [
 	},
 	{
 		path: '/registermu',
+		name: 'RegisterMu',
 		component: RegisterMu
 	},
 	{

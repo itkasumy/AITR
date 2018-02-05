@@ -18,6 +18,8 @@ export var transferRegCoinUrl = `${url}wallet/transferRegCoin`
 export var transferEarCoinUrl = `${url}wallet/transferEarCoin`
 // 验证安全验证码
 export var checkSafeCodeUrl = `${url}verifySafePwd`
+// 获取根账户Map
+export var getPosMap = `${url}account/getPosMap`
 export var getETHprice = function () {
 	return new Promise(function (resolve, reject) {
 		axios.get('https://api.huobi.pro/market/history/kline?symbol=ethusdt&period=1day&size=1').then(res => {
