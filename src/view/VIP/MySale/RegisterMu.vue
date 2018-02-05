@@ -39,7 +39,7 @@
 				</div>
 
 				<div class="m-input">
-					<div class="title">接点人: <span class="entry">进入<router-link class="jiediantu" to="/index">节点图</router-link></span></div>
+					<div class="title">接点人: <span class="entry">进入<router-link class="jiediantu" to="/organizationchart/placementchart">节点图</router-link></span></div>
 					<input type="text" ref="supAccount" value="A000000002" disabled />
 				</div>
 

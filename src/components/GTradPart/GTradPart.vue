@@ -11,24 +11,32 @@
 				<span>{{types==="buy"?'买入量':'卖出量'}}</span>
 			</div>
 			<div>
-				<input type="number" class="buy-inp-num" placeholder="0" :class="{buypart:types==='buy',sellpart:types==='sell'}" v-model="numbers">
+				<input type="number" @blur="buyNum(numbers)" class="buy-inp-num" placeholder="0" :class="{buypart:types==='buy',sellpart:types==='sell'}" v-model="numbers">
 			</div>
 			<div class="total">
 					<span>合计: </span><span :style="{color: types==='buy'?'#FFAE11':'#4A90E2'}">&nbsp;{{numbers*prices}}&nbsp;</span><span> USDT</span>
 			</div>
 			<div class="submits">
-				<input type="button" class="submit" :value="typess" :style="{background: types==='buy'?'#FFAE11':'#4A90E2'}" @click="submits">
+				<input type="button" class="submit" ref="submit" :value="typess" :style="{background: types==='buy'?'#FFAE11':'#4A90E2'}" @click="submits">
 			</div>
 		</form>
+		<prompt v-show="showTip" :tip="tip"></prompt>
 	</div>
 </template>
 <script>
+import Prompt from 'components/Prompt/Prompt'
+
 export default {
 	data () {
 		return {
 			numbers: 0,
-			prices: 0
+			prices: 0,
+			showTip: false,
+			tip: '5678'
 		}
+	},
+	components: {
+		Prompt
 	},
 	props: {
 		types: {
@@ -51,6 +59,18 @@ export default {
 			obj.price = this.prices
 			obj.number = this.numbers
 			this.$emit('tradClick', obj)
+		},
+		buyNum (numbers) {
+			if (numbers > 100000000 || numbers < 0) {
+				this.$refs.submit.setAttribute('disabled', true)
+				this.tip = '请输入0-100000000之间的数字'
+				this.showTip = true
+				setTimeout(() => {
+					this.showTip = false
+				}, 1500)
+			} else {
+				this.$refs.submit.setAttribute('disabled', false)
+			}
 		}
 	},
 	computed: {

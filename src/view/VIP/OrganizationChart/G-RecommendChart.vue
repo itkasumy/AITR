@@ -6,6 +6,7 @@
 				<img src="../../../assets/选择@2x.png" alt="" class="choice">
 				<div class="search">
 					<img src="../../../assets/搜索.png" alt="" class="search-icon">
+					<input type="text">
 				</div>
 				<div class="search-text">搜索</div>
 		</div>
@@ -172,11 +173,19 @@ export default {
 			border :.013333rem solid #ccc
 			margin-left :.266667rem
 			border-radius :.053333rem
+			display :flex
+			justify-content :flex-start
+			align-items :center
 			.search-icon
 				width :.346667rem
 				height :.346667rem
 				margin-left :.133333rem
-				margin-top :.16rem
+			input
+				width :3.066667rem
+				height :80%
+				box-sizing :border-box
+				padding-left :.266667rem
+				border :0
 		.search-text
 			background: #FFCA00
 			border-radius :.053333rem
