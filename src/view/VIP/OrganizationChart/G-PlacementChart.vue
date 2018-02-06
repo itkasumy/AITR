@@ -3,9 +3,9 @@
 		<div class="top">
 			<div class="search">
 					<img src="../../../assets/搜索.png" alt="" class="search-icon">
-					<input type="text" placeholder="搜索用户名">
+					<input type="text" placeholder="搜索用户名" v-model="searchAccount">
 			</div>
-			<div class="search-text">搜索</div>
+			<div class="search-text" @click="searchAccountMap">搜索</div>
 		</div>
 		<div class="content" v-if="s">
 			<div class="first">
@@ -368,76 +368,27 @@
 				</template>
 			</div>
 		</div>
+		<prompt :tip="tip" ref="promptAlert"></prompt>
 	</div>
 </template>
 
 <script>
-import {getPosMap, accessToken, accessAccount} from '../../../api/GApi'
+import {getPosMap, getToken, searchPosMap} from '../../../api/GApi'
+import Prompt from '@/components/Prompt/Prompt'
 import axios from 'axios'
 export default {
 	data () {
 		return {
-			posMapData: {
-				'uid': '1',
-				'account': 'A00000000',
-				'nickname': '站在塔尖的人',
-				'leftAccount': {
-					'uid': '5',
-					'account': 'A00000001',
-					'nickname': '我是测试',
-					'leftAccount': {
-						'uid': '5',
-						'account': 'A00000002',
-						'nickname': '我是测试',
-						'leftAccount': null,
-						'rightAccount': null
-					},
-					'rightAccount': {
-						'uid': '5',
-						'account': 'A00000003',
-						'nickname': '我是测试',
-						'leftAccount': {
-							'uid': '5',
-							'account': 'A00000004',
-							'nickname': '我是测试',
-							'leftAccount': null,
-							'rightAccount': null
-						},
-						'rightAccount': null
-					}
-				},
-				'rightAccount': {
-					'uid': '6',
-					'account': 'A00000005',
-					'nickname': '我是测试',
-					'leftAccount': {
-						'uid': '5',
-						'account': 'A00000006',
-						'nickname': '我是测试',
-						'leftAccount': null,
-						'rightAccount': null
-					},
-					'rightAccount': {
-						'uid': '5',
-						'account': 'A00000007',
-						'nickname': '我是测试',
-						'leftAccount': null,
-						'rightAccount': {
-							'uid': '5',
-							'account': 'A00000008',
-							'nickname': '我是测试',
-							'leftAccount': null,
-							'rightAccount': null
-						}
-					}
-				}
-			},
+			searchAccount: '',
 			s: null,
-			num: 0
+			tip: ''
 		}
 	},
 	created () {
 		this.getPosMapData()
+	},
+	components: {
+		Prompt
 	},
 	methods: {
 		changeRootMap (uid) {
@@ -453,10 +404,7 @@ export default {
 			this.s = null
 			if (uid) {
 				axios.get(getPosMap, {
-					headers: {
-						'access_token': accessToken,
-						'access_account': accessAccount
-					},
+					headers: getToken(),
 					params: {
 						target_uid: uid
 					}
@@ -466,13 +414,31 @@ export default {
 				})
 			} else {
 				axios.get(getPosMap, {
-					headers: {
-						'access_token': accessToken,
-						'access_account': accessAccount
-					}
+					headers: getToken()
 				}).then(res => {
 					this.s = res.data.result
 					console.log(res)
+				})
+			}
+		},
+		searchAccountMap () {
+			if (this.searchAccount) {
+				axios.get(searchPosMap, {
+					params: {
+						target_account: this.searchAccount
+					},
+					headers: getToken()
+				}).then(res => {
+					if (res.data.code === 0) {
+						if (res.data.result) {
+							// 查到了
+							this.s = res.data.result
+						} else {
+							// 不存在
+							this.tip = '查询错误,请重新查询'
+							this.$refs.promptAlert.show()
+						}
+					}
 				})
 			}
 		}
@@ -572,14 +538,18 @@ export default {
 					right :.833333rem
 					.dot
 						margin-top: .133333rem
+		.second
+			.colum-dots
+				top :-1.333333rem
 		.three
 			top :1.6rem
 			left :2.6rem
 			.dot
 				margin-left :.133333rem
 			.branchlist
-				margin-bottom :2.5rem
 				position :absolute
+				.colum-dots
+					top :-.466667rem
 				&.t1
 					top :0
 				&.t2

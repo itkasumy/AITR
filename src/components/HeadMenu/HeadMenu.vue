@@ -198,7 +198,7 @@ export default {
 							name: '我的钱包',
 							pageRoute: [
 								{
-									name: 'USDT',
+									name: '注册币',
 									path: '/coininfo'
 								},
 								{

@@ -6,9 +6,9 @@
 				<img src="../../../assets/选择@2x.png" alt="" class="choice">
 				<div class="search">
 					<img src="../../../assets/搜索.png" alt="" class="search-icon">
-					<input type="text">
+					<input type="text" v-model="accountName">
 				</div>
-				<div class="search-text">搜索</div>
+				<div class="search-text" @click="searchAccount">搜索</div>
 		</div>
 		<div class="content">
 				<div class="first">
@@ -16,14 +16,14 @@
 					<span class="dot"></span>
 					<span class="dot"></span>
 					<span class="dot"></span>
-					<div class="kuai">
-						<div>A000000</div>
-						<div class="account">Gruide Bluer</div>
+					<div class="kuai" :class="[refMapData.level]">
+						<div>{{refMapData.account}}</div>
+						<div class="account">{{refMapData.nickname}}</div>
 						<img src="../../../assets/v6@2x.png" alt="">
 					</div>
 				</div>
 				<div class="second">
-					<div class="colum-dots">
+					<!-- <div class="colum-dots">
 						<span class="dot"></span>
 						<span class="dot"></span>
 						<span class="dot"></span>
@@ -65,80 +65,115 @@
 						<span class="dot"></span>
 						<span class="dot"></span>
 						<span class="dot"></span>
-					</div>
-					<div class="branch">
-							<div class="branchlist">
+					</div> -->
+					<div class="branch" v-if="refMapData.children">
+							<div class="branchlist" v-for="(v,i) in refMapData.children" :key="i">
+								<div class="add" v-if="v.children">
+									<img src="../../../assets/加号@2x.png" alt="">
+								</div>
+								<div class="line-dot">
+									<span class="dot"></span>
+									<span class="dot"></span>
+									<span class="dot"></span>
+									<span class="dot"></span>
+									<span class="dot"></span>
+									<span class="dot"></span>
+								</div>
 								<span class="dot"></span>
 								<span class="dot"></span>
 								<span class="dot"></span>
-								<div class="kuai v5">
-									<div>A000000</div>
-									<div class="account">Gruide Bluer</div>
+								<span class="dot"></span>
+								<div class="kuai" :class="[v.level]">
+									<div>{{v.account}}</div>
+									<div class="account">{{v.nickname}}</div>
 									<img src="../../../assets/v5@2x.png" alt="">
 								</div>
 							</div>
-							<div class="branchlist">
-								<span class="dot"></span>
-								<span class="dot"></span>
-								<span class="dot"></span>
-								<div class="kuai v4">
-									<div>A000000</div>
-									<div class="account">Gruide Bluer</div>
-									<img src="../../../assets/v4@2x.png" alt="">
-								</div>
-							</div>
-							<div class="branchlist">
-								<span class="dot"></span>
-								<span class="dot"></span>
-								<span class="dot"></span>
-								<div class="kuai v3">
-									<div>A000000</div>
-									<div class="account">Gruide Bluer</div>
-									<img src="../../../assets/v3@2x.png" alt="">
-								</div>
-							</div>
-							<div class="branchlist">
-								<span class="dot"></span>
-								<span class="dot"></span>
-								<span class="dot"></span>
-								<div class="kuai v2">
-									<div>A000000</div>
-									<div class="account">Gruide Bluer</div>
-									<img src="../../../assets/v2@2x.png" alt="">
-								</div>
-							</div>
-							<div class="branchlist">
-								<span class="dot"></span>
-								<span class="dot"></span>
-								<span class="dot"></span>
-								<div class="kuai v1">
-									<div>A000000</div>
-									<div class="account">Gruide Bluer</div>
-									<img src="../../../assets/v1@2x.png" alt="">
-								</div>
-							</div>
-							<div class="branchlist">
-								<span class="dot"></span>
-								<span class="dot"></span>
-								<span class="dot"></span>
-								<div class="kuai v0">
-									<div>A000000</div>
-									<div class="account">Gruide Bluer</div>
-									<img src="../../../assets/v0@2x.png" alt="">
-								</div>
-							</div>
-					</div>
-					<div class="add">
-						<img src="../../../assets/加号@2x.png" alt="">
 					</div>
 				</div>
 		</div>
+		<prompt :tip="tip" ref="promptAlert"></prompt>
 	</div>
 </template>
 
 <script>
+import {getRefMap, getToken, searchRefMap} from '../../../api/GApi'
+import Prompt from '@/components/Prompt/Prompt'
+import axios from 'axios'
 export default {
-
+	data () {
+		return {
+			refMapData: null,
+			accountName: '',
+			tip: ''
+		}
+	},
+	created () {
+		console.log('created has 执行')
+		// console.log('口令为' + accessAccount)
+		// console.log('账户' + accessToken)
+		axios.get(getRefMap, {
+			headers: getToken()
+		}).then(res => {
+			console.log(res)
+			if (res.data.code === 0) {
+				let list = res.data.result
+				list.level = 'v' + list.level
+				if (list.children) {
+					list.children.forEach(item => {
+						item.level = 'v' + item.level
+					})
+				}
+				this.refMapData = list
+			} else {
+				this.tip = '请登录'
+				this.$refs.promptAlert.show()
+			}
+		})
+	},
+	components: {
+		Prompt
+	},
+	methods: {
+		searchAccount () {
+			if (this.accountName) {
+				axios.get(searchRefMap, {
+					headers: getToken(),
+					params: {
+						target_account: this.accountName
+					}
+				}).then(res => {
+					console.log(res)
+					console.log(111111111111111)
+					if (res.data.code === 0 && res.data.result) {
+						let list = res.data.result
+						list.level = 'v' + list.level
+						if (list.children) {
+							list.children.forEach(item => {
+								item.level = 'v' + item.level
+							})
+						}
+						this.refMapData = list
+					} else {
+						if (!res.data.result) {
+							this.tip = '查询的账户不存在'
+							this.$refs.promptAlert.show()
+							return
+						}
+						this.tip = res.data.msg
+						this.$refs.promptAlert.show()
+					}
+				}).catch(err => {
+					console.log(err)
+					this.tip = '查询错误'
+					this.$refs.promptAlert.show()
+				})
+			} else {
+				this.tip = '请输入要查询的账户名'
+				this.$refs.promptAlert.show()
+			}
+		}
+	}
 }
 </script>
 
@@ -199,6 +234,9 @@ export default {
 		padding :0 .266667rem
 		display :flex
 		align-items :center
+		height :1.2rem
+		position :absolute
+		z-index :2
 		.first-icon
 			width :.613333rem
 			height :.613333rem
@@ -211,6 +249,7 @@ export default {
 	.second
 		position :relative
 		height :10.666667rem
+		padding-top :1.2rem
 		.colum-dots
 			position :absolute
 			left :2.333333rem
@@ -227,30 +266,20 @@ export default {
 			.branchlist
 				display :flex
 				align-items :center
-				margin-top :.533333rem
-				.v0
-					background-color :#CCCCCC
-				.v1
-					background-color :#BF82FF
-				.v2
-					background-color :#FEA96C
-				.v3
-					background-color :#99C1FE
-				.v4
-					background-color :#76E3F4
-				.v5
-					background-color :#FFCA00
-				.v6
-					background-color :#FD7C7C
-		.add
-			position :absolute
-			left :1.7rem
-			bottom :0.4rem
-			img
-				width :.613333rem
-				height :.613333rem
+				margin-top :.5rem
+				position :relative
+				.add
+					position :absolute
+					left :-.613333rem
+					top :50%
+					margin-top :-.333333rem
+					width :.613333rem
+					height :.613333rem
+					img
+						width :.613333rem
+						height :.613333rem
+						display :block
 .kuai
-	background: #FD7C7C
 	box-shadow :0 .026667rem .053333rem 0 #CCCCCC
 	border-radius: .053333rem
 	width :2.4rem
@@ -278,4 +307,27 @@ export default {
 	background-color :#D8D8D8
 	border-radius :50%
 	margin-left :.133333rem
+.line-dot
+	position :absolute
+	left :0
+	display :flex
+	flex-direction :column
+	top :-1rem
+	.dot
+		margin-left :.133333rem
+		margin-top :.133333rem
+.v0
+	background-color :#CCCCCC
+.v1
+	background-color :#BF82FF
+.v2
+	background-color :#FEA96C
+.v3
+	background-color :#99C1FE
+.v4
+	background-color :#76E3F4
+.v5
+	background-color :#FFCA00
+.v6
+	background-color :#FD7C7C
 </style>

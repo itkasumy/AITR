@@ -11,7 +11,7 @@
 			<span>{{v.balance}}</span>
 			<span class="orange">0</span>
 			<span>
-				<a href="javascript:;" :class="{orange: v.currencyName === 'ETH'}" @click="charge(v.currencyName)">充值</a>
+				<a href="javascript:;">充值</a>
 				<a href="javascript:;">提现</a>
 			</span>
 		</div>

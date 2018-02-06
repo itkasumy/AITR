@@ -35,7 +35,7 @@
 					转让积分数量:
 				</div>
 				<div class="valuess">
-					<input type="text" placeholder="转入转出积分数量" v-model="transformInfo.coinNum">
+					<input type="number" placeholder="转入转出积分数量" v-model="transformInfo.coinNum">
 				</div>
 			</div>
 			<div class="bottom">
@@ -51,14 +51,14 @@
 				<input type="password" placeholder="输入您的安全码" :style="alertStyle" v-model="safeCode">
 			</div>
 		</g-alert>
-		<prompt :tip="tip" v-show="showTip"></prompt>
+		<prompt :tip="tip" ref="promptAlert"></prompt>
 	</div>
 </template>
 
 <script>
 import HeadMenu from 'components/HeadMenu/HeadMenu'
 import Prompt from 'components/Prompt/Prompt'
-import {accessToken, accessAccount, getByWallet, transferRegCoinUrl, transferEarCoinUrl, checkSafeCodeUrl} from '../../../api/GApi'
+import {getToken, getByWallet, transferRegCoinUrl, transferEarCoinUrl, checkSafeCodeUrl} from '../../../api/GApi'
 import axios from 'axios'
 import GAlert from 'components/GAlert/GAlert'
 export default {
@@ -99,10 +99,7 @@ export default {
 			this.title = '收益币'
 		}
 		// 获取钱包余额
-		axios.get(getByWallet, {headers: {
-			access_account: accessAccount,
-			access_token: accessToken
-		}}).then(res => {
+		axios.get(getByWallet, {headers: getToken()}).then(res => {
 			// 没获取到数据，所以先不填
 			console.log(res)
 			if (res.data.code === 0) {
@@ -127,15 +124,17 @@ export default {
 				// 取消
 			} else {
 				// 确认
+				if (!this.safeCode) {
+					this.tip = '安全码不能为空'
+					this.$refs.promptAlert.show()
+					return
+				}
 				console.log('你输入的安全码是' + this.safeCode)
 				// 根据安全码获取口令
 				let params = new URLSearchParams()
 				params.append('safe_pwd', this.safeCode)
 				axios.post(checkSafeCodeUrl, params, {
-					headers: {
-						access_account: accessAccount,
-						access_token: accessToken
-					}
+					headers: getToken()
 				}).then(res => {
 					console.log(res.data)
 					if (res.data.code === 0) {
@@ -154,37 +153,56 @@ export default {
 						params.append('safe_pwd_token', safePwdToken)
 						// 发送转账请求
 						axios.post(url, params, {
-							headers: {
-								access_account: accessAccount,
-								access_token: accessToken
-							}
+							headers: getToken()
 						}).then(res => {
 							console.log(res)
 							if (res.data.code === 0) {
-								this.tipShow(res.data.msg)
+								this.tip = '转账成功'
+								this.$refs.promptAlert.show()
+								this.$router.push(`/coininfo/${this.$route.params.typeid}`)
 							} else {
-								this.tipShow(res.data.msg)
+								if (res.data.code === 40009) {
+									this.tip = '输入的会员编号不存在'
+									this.$refs.promptAlert.show()
+									return
+								}
+								this.tip = '转账失败'
+								this.$refs.promptAlert.show()
 							}
 						})
 					} else {
 						// 安全码验证失败
 						this.safeCode = ''
-						this.tipShow(res.data.msg)
+						this.tip = '安全码输入错误'
+						this.$refs.promptAlert.show()
 					}
 				})
 			}
 		},
 		comfirmTransfer () {
-			if (this.transformInfo.userId && this.transformInfo.coinNum) {
-				this.showSafeCodeAlert = true
+			if (!this.transformInfo.userId) {
+				this.tip = '会员编号不能为空'
+				this.$refs.promptAlert.show()
+				return
 			}
-		},
-		tipShow (msg) {
-			this.showTip = true
-			this.tip = msg
-			setTimeout(() => {
-				this.showTip = false
-			}, 1500)
+			if (!this.transformInfo.coinNum) {
+				this.tip = '转出积分数量不能为空'
+				this.$refs.promptAlert.show()
+				return
+			} else {
+				if (this.transformInfo.coinNum.includes('-') || this.transformInfo.coinNum.includes('.')) {
+					this.tip = '转出积分数量不能为负数或者0或者小数'
+					this.$refs.promptAlert.show()
+					return
+				}
+				let num = parseInt(this.transformInfo.coinNum)
+				if (num >= 100000000) {
+					this.tip = '转出积分数量不能超出1亿'
+					this.$refs.promptAlert.show()
+					return
+				}
+			}
+			this.showSafeCodeAlert = true
 		}
 	}
 }

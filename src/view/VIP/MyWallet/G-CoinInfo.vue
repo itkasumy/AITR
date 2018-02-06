@@ -4,27 +4,16 @@
 		<div class="detail-container">
 			<div class="title">{{title}}</div>
 			<ul>
-				<li class="detail-item">
+				<li class="detail-item" v-for="(v, i) in transferData" :key="i">
 					<div class="th">
-						<div class="bianhao">会员编号:1</div>
-						<div class="date">2017/12/27 17:51:11</div>
+						<div class="bianhao">会员编号:{{v.id}}</div>
+						<div class="date">{{v.createdAt}}</div>
 					</div>
 					<div class="tr">
-						<div class="td">改变量:-100</div>
-						<div class="td">改变后余额:500</div>
+						<div class="td">改变量:{{v.amount}}</div>
+						<div class="td">改变后余额:{{v.balanceAfter}}</div>
 					</div>
-					<div class="tr">备注:为会员生成子账户扣除拆分币</div>
-				</li>
-				<li class="detail-item">
-					<div class="th">
-						<div class="bianhao">会员编号:1</div>
-						<div class="date">2017/12/27 17:51:11</div>
-					</div>
-					<div class="tr">
-						<div class="td">改变量:-100</div>
-						<div class="td">改变后余额:500</div>
-					</div>
-					<div class="tr">备注:为会员生成子账户扣除拆分币</div>
+					<div class="tr">备注:{{v.memo}}</div>
 				</li>
 			</ul>
 			<div class="btn" v-if="showTransfer">
@@ -36,14 +25,15 @@
 
 <script>
 import HeadMenu from 'components/HeadMenu/HeadMenu'
-import {accessToken, accessAccount, getWalletLogUrl} from '../../../api/GApi'
+import {getToken, getWalletLogUrl} from '../../../api/GApi'
 import axios from 'axios'
 export default {
 	data () {
 		return {
 			types: 0,
-			title: '注册币',
-			showTransfer: true
+			title: '',
+			showTransfer: true,
+			transferData: []
 		}
 	},
 	components: {
@@ -51,8 +41,9 @@ export default {
 	},
 	created () {
 		console.log('created')
-		let typesid = this.$route.params.typeid
+		let typesid = parseInt(this.$route.params.typeid)
 		this.types = typesid
+		console.log(`typeid 是 ${typesid}`)
 		switch (typesid) {
 		case 0:
 			this.title = '注册币'
@@ -79,22 +70,14 @@ export default {
 			this.showTransfer = false
 			break
 		}
-		axios.get(getWalletLogUrl, {headers: {
-			access_account: accessAccount,
-			access_token: accessToken
-		},
-		params: {
-			currency: typesid
-		}}).then(res => {
-			// 没获取到数据，所以先不填
-			console.log(res)
-		})
+		this.getData(typesid)
 	},
 	watch: {
 		$route () {
 			console.log('watch')
-			let typesid = this.$route.params.typeid
-			this.types = typesid
+			let typesid = parseInt(this.$route.params.typeid)
+			this.types = parseInt(typesid)
+			this.getData(typesid)
 			switch (typesid) {
 			case 0:
 				this.title = '注册币'
@@ -121,6 +104,35 @@ export default {
 				this.showTransfer = false
 				break
 			}
+		}
+	},
+	methods: {
+		timestampToTime (timestamp) {
+			var date = new Date(timestamp)// 时间戳为10位需*1000，时间戳为13位的话不需乘1000
+			var Y = date.getFullYear() + '/'
+			var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '/'
+			var D = date.getDate() + ' '
+			var h = date.getHours() + ':'
+			var m = date.getMinutes() + ':'
+			var s = date.getSeconds()
+			return Y + M + D + h + m + s
+		},
+		getData (typesid) {
+			axios.get(getWalletLogUrl, {
+				headers: getToken(),
+				params: {
+					currency: typesid
+				}
+			}).then(res => {
+				// 没获取到数据，所以先不填
+				console.log(res)
+				let list = res.data.result.list
+				list.forEach((item) => {
+					item.createdAt = this.timestampToTime(item.createdAt)
+				})
+				this.transferData = list
+				console.log(this.transferData)
+			})
 		}
 	}
 }

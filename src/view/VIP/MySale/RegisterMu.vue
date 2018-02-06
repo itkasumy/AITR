@@ -24,12 +24,12 @@
 				</div>
 
 				<div class="m-input">
-					<div class="title">登录安全码:</div>
+					<div class="title">安全码:</div>
 					<input type="password" @blur="checkSafepwd(safepwd)" v-model="safepwd" ref="safepwd" placeholder="输入6位数字......" />
 				</div>
 
 				<div class="m-input">
-					<div class="title">确认登录安全码:</div>
+					<div class="title">确认安全码:</div>
 					<input type="password" @blur="checkCfmSafepwd(cfmSafepwd)" v-model="cfmSafepwd" ref="cfmSafepwd" placeholder="与登录安全码相同......" />
 				</div>
 
@@ -39,7 +39,7 @@
 				</div>
 
 				<div class="m-input">
-					<div class="title">接点人: <span class="entry">进入<router-link class="jiediantu" to="/organizationchart/placementchart">节点图</router-link></span></div>
+					<div class="title">接点人: <span class="entry">进入<router-link class="jiediantu" to="/organizationchart/placementchart">接点图</router-link></span></div>
 					<input type="text" ref="supAccount" v-model="supaccount" disabled />
 				</div>
 
@@ -60,10 +60,11 @@
 			</div>
 
 			<div class="submit">
+				<div class="tips-10">提示: 每次注册需要消耗10个注册币</div>
 				<input type="submit" value="确定">
 			</div>
 		</form>
-		<prompt :tip="tip" v-show="showTip"></prompt>
+		<prompt :tip="tip" ref="promptAlert"></prompt>
 	</div>
 </template>
 
@@ -78,7 +79,6 @@ export default {
 	data () {
 		return {
 			tip: '',
-			showTip: false,
 			account: '',
 			nickname: '',
 			pwd: '',
@@ -86,7 +86,7 @@ export default {
 			safepwd: '',
 			cfmSafepwd: '',
 			email: '',
-			direction: '右区',
+			direction: '',
 			supaccount: 'A000000002',
 			balance: 0
 		}
@@ -97,7 +97,9 @@ export default {
 	},
 	mounted () {
 		if (this.$route.query) {
-			this.direction = this.$route.query.direction === 'l' ? '左区' : '右区'
+			if (this.$route.query.direction) {
+				this.direction = this.$route.query.direction === 'l' ? '左区' : '右区'
+			}
 			this.supaccount = this.$route.query.parentId
 		}
 		getBalance().then(res => {
@@ -109,43 +111,99 @@ export default {
 	},
 	methods: {
 		checkAccount (account) {
-			if (!/^\w{5,18}$/.test(account)) {
-				this.tipShow('会员账号不合法')
+			if (!/^[0-9a-zA-Z]+$/.test(account)) {
+				this.tipShow('会员账号只允许输入英文或者数字')
+				return false
+			}
+			if (account.length > 18 || account.length < 5) {
+				this.tipShow('字符长度需要在5-18之间')
+				return false
 			}
 		},
 		checkNickname (nickname) {
-			if (!/^[a-zA-Z\u4E00-\u9F45\uac00-\ud7ff\u0800-\u4e00]{2,16}$/.test(nickname)) {
-				this.tipShow('会员姓名不合法')
+			if (!/^[a-zA-Z\u4E00-\u9F45\uac00-\ud7ff\u0800-\u4e00]+$/.test(nickname)) {
+				this.tipShow('会员姓名只允许输入汉字或者字母')
+				return false
+			}
+			if (nickname.length < 4 || nickname.length > 16) {
+				this.tipShow('字符长度需要在4-16之间')
+				return false
 			}
 		},
 		checkPwd (pwd) {
-			if (!/^[a-zA-Z0-9]{8,16}$/.test(pwd)) {
-				this.tipShow('密码不合法')
+			if (!/^[0-9a-zA-Z]+$/.test(pwd)) {
+				this.tipShow('登录密码只允许输入字母或者数字')
+				return false
+			}
+			if (pwd.length < 8 || pwd.length > 18) {
+				this.tipShow('只允许输入8-16位英文或数字')
+				return false
 			}
 		},
 		checkCfmPwd (cfmPwd) {
 			let password = this.$refs.pwd.value
 			if (password !== cfmPwd) {
 				this.tipShow('两次输入的密码不同')
+				return false
 			}
 		},
 		checkSafepwd (safepwd) {
-			if (!/^[a-zA-Z0-9]{8,16}$/.test(safepwd)) {
-				this.tipShow('安全码不合法')
+			if (!/^[0-9a-zA-Z]+$/.test(safepwd)) {
+				this.tipShow('安全码只允许输入字母或者数字')
+				return false
+			}
+			if (safepwd.length < 8 || safepwd.length > 18) {
+				this.tipShow('只允许输入8-16位英文或数字')
+				return false
 			}
 		},
 		checkCfmSafepwd (cfmSafepwd) {
 			let safeword = this.$refs.cfmSafepwd.value
 			if (safeword !== cfmSafepwd) {
 				this.tipShow('两次输入的安全码不同')
+				return false
 			}
 		},
 		checkEmail (email) {
-			if (!/^\w+([-+.]\w+)@\w+([-.]\w+).\w+([-.]\w+)*$/.test(email)) {
+			// if (!/^\w+([-+.]\w+)@\w+([-.]\w+).\w+([-.]\w+)*$/.test(email)) {
+			if (!/^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/.test(email)) {
 				this.tipShow('邮箱不合法')
+				return false
 			}
 		},
 		registerMuAcc () {
+			console.log('11')
+			// 检测账户为空问题
+			if (!this.account) {
+				this.tipShow('会员账号不能为空')
+				return false
+			}
+			// 检测密码为空问题
+			if (!this.pwd) {
+				this.tipShow('密码不能为空')
+				return false
+			}
+			// 检测安全码为空问题
+			if (!this.safepwd) {
+				this.tipShow('安全码不能为空')
+				return false
+			}
+			// 检测安全码和密码相同问题
+			if (this.pwd === this.safepwd) {
+				this.tipShow('登录密码和安全码不能相同')
+				return false
+			}
+			// 2次安全码不一样问题
+			if (!this.safepwd === this.cfmSafepwd) {
+				this.tipShow('两次安全码输入不一致')
+				return false
+			}
+			// 邮箱不能为空问题
+			if (!this.email) {
+				this.tipShow('邮箱不能为空')
+				return false
+			}
+			console.log('22')
 			let params = new URLSearchParams()
 			params.append('account', this.$refs.account.value)
 			params.append('nickname', this.$refs.nickname.value)
@@ -156,21 +214,21 @@ export default {
 			params.append('position', this.$refs.position.value === '左区' ? 0 : 1)
 			registerMu(params).then(res => {
 				if (res.data.code === 40001) {
-					this.tipShow(res.data.msg)
+					this.tipShow('会员账号不合法')
 				} else if (res.data.code === 40002) {
-					this.tipShow(res.data.msg)
+					this.tipShow('会员姓名不合法')
 				} else if (res.data.code === 40003) {
-					this.tipShow(res.data.msg)
+					this.tipShow('密码不合法')
 				} else if (res.data.code === 40004) {
-					this.tipShow(res.data.msg)
+					this.tipShow('安全码不合法')
 				} else if (res.data.code === 40005) {
-					this.tipShow(res.data.msg)
+					this.tipShow('接点人不存在')
 				} else if (res.data.code === 40006) {
-					this.tipShow(res.data.msg)
+					this.tipShow('市场位置不正确')
 				} else if (res.data.code === 40007) {
-					this.tipShow(res.data.msg)
+					this.tipShow('会员账号已存在')
 				} else if (res.data.code === 40028) {
-					this.tipShow(res.data.msg)
+					this.tipShow('邮箱不合法')
 				} else if (res.data.code === 0) {
 					this.tipShow(res.data.msg)
 					this.$router.push({path: '/index'})
@@ -181,11 +239,8 @@ export default {
 			})
 		},
 		tipShow (msg) {
-			this.showTip = true
 			this.tip = msg
-			setTimeout(() => {
-				this.showTip = false
-			}, 1500)
+			this.$refs.promptAlert.show()
 		}
 	}
 }
@@ -237,8 +292,12 @@ export default {
 			margin-bottom 17px
 		.submit
 			width 8.72rem
-			height 1.12rem
-			margin .853333rem auto 0
+			height 3.12rem
+			margin .253333rem auto 0rem
+			.tips-10
+				text-align center
+				color #FFCA00
+				font-size .32rem
 			input
 				width 8.72rem
 				height 1.12rem

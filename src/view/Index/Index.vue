@@ -365,6 +365,6 @@ export default {
 									&.min
 										background url('./下降.png') left top / .266667rem .32rem no-repeat
 		.bt-banner
-			height 184px
+			height 2.453333rem
 			background url('./底部banner.png') top center / 100%  2.453333rem no-repeat
 </style>

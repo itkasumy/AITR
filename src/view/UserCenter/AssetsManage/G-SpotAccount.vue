@@ -14,7 +14,7 @@
 	</div>
 </template>
 <script>
-import {spotAccount, orderDataUrl, accessToken, accessAccount, rechargeHistory, orderDatasUrl} from '../../../api/GApi'
+import {spotAccount, orderDataUrl, getToken, rechargeHistory, orderDatasUrl} from '../../../api/GApi'
 import GRechargeHistory from 'components/GRechargeHistory/GRechargeHistory'
 import GAssetsManage from 'components/GAssetsManage/GAssetsManage'
 import GAlert from 'components/GAlert/GAlert'
@@ -81,10 +81,7 @@ export default {
 			let params = new URLSearchParams()
 			params.append('currency_id', type)
 			params.append('number', num)
-			axios.post(orderDataUrl, params, {headers: {
-				'access_token': accessToken,
-				'access_account': accessAccount
-			}}).then(res => {
+			axios.post(orderDataUrl, params, {headers: getToken()}).then(res => {
 				if (res.data.code === 0) {
 					this.orderData = res.data.result
 				}
@@ -102,10 +99,7 @@ export default {
 				params: {
 					'order_id': orderid
 				},
-				headers: {
-					'access_token': accessToken,
-					'access_account': accessAccount
-				}
+				headers: getToken()
 			}).then(res => {
 				if (res.data.code === 0) {
 					this.orderData = res.data.result
