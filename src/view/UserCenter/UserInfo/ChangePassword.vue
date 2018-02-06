@@ -5,12 +5,25 @@
 			<div class="form-content">
 				<div class="m-input">
 					<div class="title">新的密码:</div>
-					<input type="password" ref="pwd" name="account" placeholder="输入新的密码" />
+					<input
+						type="password"
+						@blur="checkPwd(pwd)"
+						ref="pwd"
+						name="pwd"
+						v-model="pwd"
+						placeholder="输入新的密码"
+					/>
 				</div>
 
 				<div class="m-input">
 					<div class="title">确认新密码:</div>
-					<input type="password" ref="verifyPwd" placeholder="再次输入新密码" />
+					<input
+						type="password"
+						ref="verifyPwd"
+						placeholder="再次输入新密码"
+						v-model="cfmPwd"
+						@blur="checkCfmPwd(cfmPwd)"
+					/>
 				</div>
 			</div>
 
@@ -21,14 +34,22 @@
 
 		<div class="mask" v-show="maskShow">
 			<div class="alert-content">
-				<div class="title">输入当前安全码</div>
-				<input class="confirmpwd" ref="confirmPwd" type="password" placeholder="输入您的当前安全码">
+				<div class="title">输入当前密码</div>
+				<input
+					class="confirmpwd"
+					ref="confirmPwd"
+					type="password"
+					v-model="confirmPwd"
+					@blur="checkConfirmPwd(confirmPwd)"
+					placeholder="输入您的当前密码"
+				>
 				<div class="decision">
 					<div class="cancel" @click="cancel">取消</div>
 					<div class="decide" @click="changeUserPwd">确定</div>
 				</div>
 			</div>
 		</div>
+		<prompt :tip="tip" ref="promptRef"></prompt>
 	</div>
 </template>
 
@@ -36,19 +57,33 @@
 import {verifyPwd, updatePwd} from 'util/http'
 
 import HeadMenu from 'components/HeadMenu/HeadMenu'
+import Prompt from 'components/Prompt/Prompt'
 
 export default {
 	data () {
 		return {
-			maskShow: false
+			maskShow: false,
+			pwd: '',
+			cfmPwd: '',
+			tip: '',
+			confirmPwd: ''
 		}
 	},
 	components: {
-		HeadMenu
+		HeadMenu,
+		Prompt
 	},
 	methods: {
 		changeUserPwd () {
-			let pwd = this.$refs.pwd.value
+			if (!this.confirmPwd) {
+				this.tip = '当前密码不能为空'
+				this.$refs.promptRef.show()
+				return
+			} else if (!/^[a-zA-Z0-9]{8,16}$/.test(this.confirmPwd)) {
+				this.tip = '只能输入8-16位的数字或字母'
+				this.$refs.promptRef.show()
+				return
+			}
 			let verifyPwdd = this.$refs.verifyPwd.value
 			let confirmPwd = this.$refs.confirmPwd.value
 			let verifyPwdParams = new URLSearchParams()
@@ -56,15 +91,35 @@ export default {
 			verifyPwdParams.append('pwd', confirmPwd)
 
 			verifyPwd(verifyPwdParams).then(res => {
+				if (res.data.code === 40009) {
+					this.tip = '会员密码错误'
+					this.$refs.promptRef.show()
+					return
+				}
+				if (res.data.code === 400010) {
+					this.tip = res.data.msg
+					this.$refs.promptRef.show()
+					return
+				}
 				let pwdToken = res.data.result.pwdToken
 				updatePwdParams.append('pwd', verifyPwdd)
 				updatePwdParams.append('pwd_token', pwdToken)
-				if (pwd === verifyPwdd) {
-					updatePwd(updatePwdParams).then(res => {
-						this.maskShow = false
-						this.$refs.confirmPwd.value = ''
-					})
-				}
+				updatePwd(updatePwdParams).then(res => {
+					if (res.data.code === 40009) {
+						this.tip = '会员密码错误'
+						this.$refs.promptRef.show()
+					}
+					if (res.data.code === 40012) {
+						this.tip = '密码修改失败'
+						this.$refs.promptRef.show()
+					}
+					if (res.data.code === 0) {
+						this.tip = res.data.msg
+						this.$refs.promptRef.show()
+					}
+					this.maskShow = false
+					this.$refs.confirmPwd.value = ''
+				})
 			})
 		},
 		cancel () {
@@ -72,7 +127,52 @@ export default {
 			this.$refs.confirmPwd.value = ''
 		},
 		getVerifySafePwd () {
+			if (!this.pwd) {
+				this.tip = '新密码不能为空'
+				this.$refs.promptRef.show()
+				return
+			} else if (!/^[a-zA-Z0-9]{8,16}$/.test(this.pwd)) {
+				this.tip = '只能输入8-16位的数字或字母'
+				this.$refs.promptRef.show()
+				return
+			}
+			if (!this.cfmPwd) {
+				this.tip = '确认新密码不能为空'
+				this.$refs.promptRef.show()
+				return
+			} else if (this.cfmPwd !== this.pwd) {
+				this.tip = '两次密码输入不一致'
+				this.$refs.promptRef.show()
+				return
+			}
 			this.maskShow = true
+		},
+		checkPwd (pwd) {
+			if (!pwd) {
+				this.tip = '新密码不能为空'
+				this.$refs.promptRef.show()
+			} else if (!/^[a-zA-Z0-9]{8,16}$/.test(pwd)) {
+				this.tip = '只能输入8-16位的数字或字母'
+				this.$refs.promptRef.show()
+			}
+		},
+		checkCfmPwd (cfmPwd) {
+			if (!cfmPwd) {
+				this.tip = '确认新密码不能为空'
+				this.$refs.promptRef.show()
+			} else if (cfmPwd !== this.pwd) {
+				this.tip = '两次密码输入不一致'
+				this.$refs.promptRef.show()
+			}
+		},
+		checkConfirmPwd (confirmPwd) {
+			if (!confirmPwd) {
+				this.tip = '当前密码不能为空'
+				this.$refs.promptRef.show()
+			} else if (!/^[a-zA-Z0-9]{8,16}$/.test(confirmPwd)) {
+				this.tip = '只能输入8-16位的数字或字母'
+				this.$refs.promptRef.show()
+			}
 		}
 	}
 }

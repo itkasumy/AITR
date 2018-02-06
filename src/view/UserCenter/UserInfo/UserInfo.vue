@@ -10,7 +10,12 @@
 
 				<div class="m-input">
 					<div class="title">会员名称:</div>
-					<input type="text" ref="nickName" v-model="userInfo.nickname" />
+					<input
+						type="text"
+						ref="nickName"
+						@blur="checkNickname(userInfo.nickname)"
+						v-model="userInfo.nickname"
+					/>
 				</div>
 
 				<div class="m-input">
@@ -19,8 +24,15 @@
 				</div>
 
 				<div class="m-input">
-					<div class="title">邮箱:</div>
-					<input type="text" ref="email" name="mail" v-model="userInfo.email" placeholder="输入您的邮箱地址" />
+					<div class="title">邮箱: <span>*邮箱可用来找回密码，请谨慎输入！</span></div>
+					<input
+						type="text"
+						ref="email"
+						name="mail"
+						v-model="userInfo.email"
+						placeholder="输入您的邮箱地址"
+						@blur="checkEmail(userInfo.email)"
+					/>
 				</div>
 			</div>
 
@@ -32,13 +44,21 @@
 		<div class="mask" v-show="maskShow">
 			<div class="alert-content">
 				<div class="title">输入当前安全码</div>
-				<input class="confirmpwd" ref="confirmPwd" type="password" placeholder="输入您的当前安全码">
+				<input
+					class="confirmpwd"
+					ref="confirmPwd"
+					type="password"
+					v-model="safePwd"
+					placeholder="输入您的当前安全码"
+					@blur="checkSafePwd(safePwd)"
+				>
 				<div class="decision">
 					<div class="cancel" @click="cancel">取消</div>
 					<div class="decide" @click="changeUserInfo">确定</div>
 				</div>
 			</div>
 		</div>
+		<prompt :tip="tip" ref="promptRef"></prompt>
 	</div>
 </template>
 
@@ -46,31 +66,44 @@
 import {getAccountInfo, updateNickname, updateEmail, verifySafePwd} from 'util/http'
 
 import HeadMenu from 'components/HeadMenu/HeadMenu'
+import Prompt from 'components/Prompt/Prompt'
 
 export default {
 	data () {
 		return {
 			userInfo: {},
-			maskShow: false
+			maskShow: false,
+			tip: '',
+			safePwd: ''
 		}
 	},
 	components: {
-		HeadMenu
+		HeadMenu,
+		Prompt
 	},
 	mounted () {
 		this.getUserInfo()
 	},
 	methods: {
 		getUserInfo () {
-			const level = ['一星会员', '二星会员', '三星会员', '四星会员', '五星会员', '六星会员']
+			// const level = ['一星会员', '二星会员', '三星会员', '四星会员', '五星会员', '六星会员']
 			getAccountInfo().then(res => {
 				if (res.data.code === 0) {
-					res.data.result.level = level[res.data.result.level - 1]
+					// res.data.result.level = level[res.data.result.level - 1]
 					this.userInfo = res.data.result
 				}
 			})
 		},
 		changeUserInfo () {
+			if (!this.safePwd) {
+				this.tip = '安全码不能为空'
+				this.$refs.promptRef.show()
+				return
+			} else if (!/^[a-zA-Z0-9]{8,16}$/.test(this.safePwd)) {
+				this.tip = '安全码格式不正确'
+				this.$refs.promptRef.show()
+				return
+			}
 			let nickName = this.$refs.nickName.value
 			let email = this.$refs.email.value
 			let confirmPwd = this.$refs.confirmPwd.value
@@ -81,6 +114,11 @@ export default {
 			paramsForGetVerifySafePwd.append('safe_pwd', confirmPwd)
 
 			verifySafePwd(paramsForGetVerifySafePwd).then(res => {
+				if (res.data.code === 40011) {
+					this.tip = '会员安全码错误'
+					this.$refs.promptRef.show()
+					return
+				}
 				safePwdToken = res.data.result.safePwdToken
 				paramsForUpdateNickname.append('safe_pwd_token', safePwdToken)
 				paramsForUpdateNickname.append('nickname', nickName)
@@ -88,10 +126,18 @@ export default {
 				paramsForUpdateEmail.append('email', email)
 				updateNickname(paramsForUpdateNickname).then(res => {
 					this.$refs.confirmPwd.value = ''
+					if (res.data.code === 0) {
+						this.tip = res.data.msg
+						this.$refs.promptRef.show()
+					}
 					this.maskShow = false
 				})
 				updateEmail(paramsForUpdateEmail).then(res => {
 					this.$refs.confirmPwd.value = ''
+					if (res.data.code === 0) {
+						this.tip = res.data.msg
+						this.$refs.promptRef.show()
+					}
 					this.maskShow = false
 				})
 			})
@@ -101,7 +147,59 @@ export default {
 			this.$refs.confirmPwd.value = ''
 		},
 		getVerifySafePwd () {
+			if (!this.userInfo.nickname) {
+				this.tip = '会员姓名不能为空'
+				this.$refs.promptRef.show()
+				return
+			} else if (!/^[a-zA-Z\u4e00-\u9fa5]+$/.test(this.userInfo.nickname)) {
+				this.tip = '会员姓名只能输入汉字或字母'
+				this.$refs.promptRef.show()
+				return
+			} else if (this.userInfo.nickname.length < 4 || this.userInfo.nickname.length > 16) {
+				this.tip = '字符长度需要在4-16之间'
+				this.$refs.promptRef.show()
+				return
+			}
+			if (!this.userInfo.email) {
+				this.tip = '邮箱不能为空'
+				this.$refs.promptRef.show()
+				return
+			} else if (!/^[A-Za-z0-9]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(this.userInfo.email)) {
+				this.tip = '邮箱格式不正确'
+				this.$refs.promptRef.show()
+				return
+			}
 			this.maskShow = true
+		},
+		checkNickname (nickName) {
+			if (!nickName) {
+				this.tip = '会员姓名不能为空'
+				this.$refs.promptRef.show()
+			} else if (!/^[a-zA-Z\u4e00-\u9fa5]+$/.test(nickName)) {
+				this.tip = '会员姓名只能输入汉字或字母'
+				this.$refs.promptRef.show()
+			} else if (nickName.length < 4 || nickName.length > 16) {
+				this.tip = '字符长度需要在4-16之间'
+				this.$refs.promptRef.show()
+			}
+		},
+		checkEmail (email) {
+			if (!email) {
+				this.tip = '邮箱不能为空'
+				this.$refs.promptRef.show()
+			} else if (!/^[A-Za-z0-9]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(email)) {
+				this.tip = '邮箱格式不正确'
+				this.$refs.promptRef.show()
+			}
+		},
+		checkSafePwd (safepwd) {
+			if (!safepwd) {
+				this.tip = '安全码不能为空'
+				this.$refs.promptRef.show()
+			} else if (!/^[a-zA-Z0-9]{8,16}$/.test(safepwd)) {
+				this.tip = '安全码格式不正确'
+				this.$refs.promptRef.show()
+			}
 		}
 	}
 }
@@ -129,6 +227,9 @@ export default {
 					font-family 'PingFangSC-Regular'
 					color #333
 					font-size .4rem
+					span
+						font-size .32rem
+						color #FE3824
 				input
 					display block
 					box-sizing border-box

@@ -5,12 +5,25 @@
 			<div class="form-content">
 				<div class="m-input">
 					<div class="title">新的安全码:</div>
-					<input type="password" ref="safecode" name="account" placeholder="输入新的安全码" />
+					<input
+						type="password"
+						@blur="checkSafecode(safecode)"
+						ref="safecode"
+						name="account"
+						v-model="safecode"
+						placeholder="输入新的安全码"
+					/>
 				</div>
 
 				<div class="m-input">
 					<div class="title">确认新安全码:</div>
-					<input type="password" ref="verifySafecode" placeholder="再次输入新安全码" />
+					<input
+						type="password"
+						ref="verifySafecode"
+						placeholder="再次输入新安全码"
+						v-model="cfmSafecode"
+						@blur="checkCfmSafecode(cfmSafecode)"
+					/>
 				</div>
 			</div>
 
@@ -22,13 +35,21 @@
 		<div class="mask" v-show="maskShow">
 			<div class="alert-content">
 				<div class="title">输入当前安全码</div>
-				<input class="confirmpwd" ref="verifySafePwd" type="password" placeholder="输入您的当前安全码">
+				<input
+					class="confirmpwd"
+					ref="verifySafePwd"
+					type="password"
+					v-model="verifySafePwd"
+					@blur="checkVerifySafePwd(verifySafePwd)"
+					placeholder="输入您的当前安全码"
+				>
 				<div class="decision">
 					<div class="cancel" @click="cancel">取消</div>
 					<div class="decide" @click="changeUserSafePwd">确定</div>
 				</div>
 			</div>
 		</div>
+		<prompt :tip="tip" ref="promptRef"></prompt>
 	</div>
 </template>
 
@@ -36,18 +57,33 @@
 import {verifySafePwd, updateSafePwd} from 'util/http'
 
 import HeadMenu from 'components/HeadMenu/HeadMenu'
+import Prompt from 'components/Prompt/Prompt'
 
 export default {
 	data () {
 		return {
-			maskShow: false
+			maskShow: false,
+			tip: '',
+			safecode: '',
+			cfmSafecode: '',
+			verifySafePwd: ''
 		}
 	},
 	components: {
-		HeadMenu
+		HeadMenu,
+		Prompt
 	},
 	methods: {
 		changeUserSafePwd () {
+			if (!this.verifySafePwd) {
+				this.tip = '当前安全码不能为空'
+				this.$refs.promptRef.show()
+				return
+			} else if (!/^[a-zA-Z0-9]{8,16}$/.test(this.verifySafePwd)) {
+				this.tip = '只能输入8-16位的数字或字母'
+				this.$refs.promptRef.show()
+				return
+			}
 			let safecode = this.$refs.safecode.value
 			let verifySafecode = this.$refs.verifySafecode.value
 			let verifySafePwdd = this.$refs.verifySafePwd.value
@@ -56,12 +92,29 @@ export default {
 			verifySafePwdParams.append('safe_pwd', verifySafePwdd)
 
 			verifySafePwd(verifySafePwdParams).then(res => {
+				if (res.data.code === 40011) {
+					this.tip = '会员安全码错误'
+					this.$refs.promptRef.show()
+					return
+				}
 				let safePwdToken = res.data.result.safePwdToken
 				updateSafePwdParams.append('safe_pwd', verifySafecode)
 				updateSafePwdParams.append('safe_pwd_token', safePwdToken)
 				console.log(updateSafePwdParams)
 				if (safecode === verifySafecode) {
 					updateSafePwd(updateSafePwdParams).then(res => {
+						if (res.data.code === 40011) {
+							this.tip = '会员安全码错误'
+							this.$refs.promptRef.show()
+						}
+						if (res.data.code === 40013) {
+							this.tip = '安全码修改失败'
+							this.$refs.promptRef.show()
+						}
+						if (res.data.code === 0) {
+							this.tip = res.data.msg
+							this.$refs.promptRef.show()
+						}
 						this.maskShow = false
 						this.$refs.verifySafePwd.value = ''
 					})
@@ -73,7 +126,52 @@ export default {
 			this.$refs.verifySafePwd.value = ''
 		},
 		getVerifySafePwd () {
+			if (!this.safecode) {
+				this.tip = '新安全码不能为空'
+				this.$refs.promptRef.show()
+				return
+			} else if (!/^[a-zA-Z0-9]{8,16}$/.test(this.safecode)) {
+				this.tip = '只能输入8-16位的数字或字母'
+				this.$refs.promptRef.show()
+				return
+			}
+			if (!this.cfmSafecode) {
+				this.tip = '确认新安全码不能为空'
+				this.$refs.promptRef.show()
+				return
+			} else if (this.cfmSafecode !== this.safecode) {
+				this.tip = '两次安全码输入不一致'
+				this.$refs.promptRef.show()
+				return
+			}
 			this.maskShow = true
+		},
+		checkSafecode (safecode) {
+			if (!safecode) {
+				this.tip = '安全码不能为空'
+				this.$refs.promptRef.show()
+			} else if (!/^[a-zA-Z0-9]{8,16}$/.test(safecode)) {
+				this.tip = '安全码只能输入8-16位的数字或者字母'
+				this.$refs.promptRef.show()
+			}
+		},
+		checkCfmSafecode (cfmSafecode) {
+			if (!cfmSafecode) {
+				this.tip = '新的安全码不能为空'
+				this.$refs.promptRef.show()
+			} else if (cfmSafecode !== this.safecode) {
+				this.tip = '两次安全码输入不一致'
+				this.$refs.promptRef.show()
+			}
+		},
+		checkVerifySafePwd (verifySafePwd) {
+			if (!verifySafePwd) {
+				this.tip = '当前安全码不能为空'
+				this.$refs.promptRef.show()
+			} else if (!/^[a-zA-Z0-9]{8,16}$/.test(verifySafePwd)) {
+				this.tip = '只能输入8-16位的数字或字母'
+				this.$refs.promptRef.show()
+			}
 		}
 	}
 }

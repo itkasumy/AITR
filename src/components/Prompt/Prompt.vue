@@ -1,15 +1,28 @@
 <template>
-	<div class="prompt">
+	<div class="prompt" v-if="shows">
 		<div class="tip">{{tip}}</div>
 	</div>
 </template>
 
 <script>
 export default {
+	data () {
+		return {
+			shows: false
+		}
+	},
 	props: {
 		tip: {
 			type: String,
 			default: '1234'
+		}
+	},
+	methods: {
+		show () {
+			this.shows = true
+			setTimeout(() => {
+				this.shows = false
+			}, 1000)
 		}
 	}
 }
