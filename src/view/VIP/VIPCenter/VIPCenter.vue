@@ -7,17 +7,17 @@
 				<div class="process-container">
 					<div class="process-item">
 						<div class="process-item-title">注册币</div>
-						<div class="process-item-price">15000.000</div>
+						<div class="process-item-price">{{balance.registerCoin}}</div>
 					</div>
 
 					<div class="process-item">
 						<div class="process-item-title">众筹币</div>
-						<div class="process-item-price">15000.000</div>
+						<div class="process-item-price">{{balance.crowdfundingCoin}}</div>
 					</div>
 
 					<div class="process-item">
 						<div class="process-item-title">拆分币</div>
-						<div class="process-item-price">15000.000</div>
+						<div class="process-item-price">{{balance.splitCoin}}</div>
 					</div>
 				</div>
 
@@ -52,17 +52,17 @@
 				<div class="coin-container">
 					<div class="coin-item">
 						<div class="coin-item-title">收益币</div>
-						<div class="coin-item-price">15000.000</div>
+						<div class="coin-item-price">{{balance.earningsCoin}}</div>
 					</div>
 
 					<div class="coin-item">
 						<div class="coin-item-title">重构币</div>
-						<div class="coin-item-price">15000.000</div>
+						<div class="coin-item-price">{{balance.reconstructionCoin}}</div>
 					</div>
 
 					<div class="coin-item">
 						<div class="coin-item-title">消费币</div>
-						<div class="coin-item-price">15000.000</div>
+						<div class="coin-item-price">{{balance.consumptionCoin}}</div>
 					</div>
 				</div>
 			</div>
@@ -90,11 +90,25 @@
 </template>
 
 <script>
+import {getUSDTBalance} from 'util/http'
 import HeadMenu from 'components/HeadMenu/HeadMenu'
 
 export default {
+	data () {
+		return {
+			balance: {}
+		}
+	},
 	components: {
 		HeadMenu
+	},
+	mounted () {
+		getUSDTBalance().then(res => {
+			if (res.data.code === 0) {
+				console.log(res.data)
+				this.balance = res.data.result
+			}
+		})
 	}
 }
 </script>

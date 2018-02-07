@@ -208,21 +208,21 @@ export const registerMu = (params) => {
 	})
 }
 
-// export const getBalance = (params) => {
-// 	var token = JSON.parse(localStorage.getItem('__token__'))
-// 	return new Promise((resolve, reject) => {
-// 		axios.get('/wallet/getByAccount', {
-// 			headers: {
-// 				'access_account': token.accessAccount,
-// 				'access_token': token.accessToken
-// 			}
-// 		}).then(res => {
-// 			resolve(res)
-// 		}).catch(error => {
-// 			reject(error)
-// 		})
-// 	})
-// }
+export const getUSDTBalance = (params) => {
+	var token = JSON.parse(localStorage.getItem('__token__'))
+	return new Promise((resolve, reject) => {
+		axios.get('/wallet/getByAccount', {
+			headers: {
+				'access_account': token.accessAccount,
+				'access_token': token.accessToken
+			}
+		}).then(res => {
+			resolve(res)
+		}).catch(error => {
+			reject(error)
+		})
+	})
+}
 
 export const getBalance = (params) => {
 	var token = JSON.parse(localStorage.getItem('__token__'))

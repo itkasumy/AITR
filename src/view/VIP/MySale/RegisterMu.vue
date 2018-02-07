@@ -38,7 +38,7 @@
 					<input type="text" value="普通会员" disabled />
 				</div>
 
-				<div class="m-input">
+				<div class="m-input" @click="saveInfo">
 					<div class="title">接点人: <span class="entry">进入<router-link class="jiediantu" to="/organizationchart/placementchart">接点图</router-link></span></div>
 					<input type="text" ref="supAccount" v-model="supaccount" disabled />
 				</div>
@@ -54,7 +54,7 @@
 				</div>
 
 				<div class="m-input">
-					<div class="title">USDT余额:</div>
+					<div class="title">注册币余额:</div>
 					<input type="text" v-model="balance" disabled />
 				</div>
 			</div>
@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import {registerMu, getBalance} from 'util/http'
+import {registerMu, getUSDTBalance} from 'util/http'
 import {calcCharLen} from 'util/util'
 
 import HeadMenu from 'components/HeadMenu/HeadMenu'
@@ -96,6 +96,16 @@ export default {
 		HeadMenu,
 		Prompt
 	},
+	created () {
+		let obj = this.$store.state.registerTempInfo
+		this.account = obj.account
+		this.nickname = obj.nickname
+		this.pwd = obj.pwd
+		this.cfmPwd = obj.cfmPwd
+		this.safepwd = obj.safepwd
+		this.cfmSafepwd = obj.cfmSafepwd
+		this.email = obj.email
+	},
 	mounted () {
 		if (this.$route.query) {
 			if (this.$route.query.direction) {
@@ -103,8 +113,7 @@ export default {
 			}
 			this.supaccount = this.$route.query.parentId
 		}
-		getBalance().then(res => {
-			console.log(res.data)
+		getUSDTBalance().then(res => {
 			if (res.data.code === 0) {
 				this.balance = res.data.result.registerCoin
 			}
@@ -214,35 +223,46 @@ export default {
 			params.append('position', this.$refs.position.value === '左区' ? 0 : 1)
 			registerMu(params).then(res => {
 				if (res.data.code === 40001) {
-					this.tipShow('会员账号不合法')
-				} else if (res.data.code === 40002) {
-					this.tipShow('会员姓名不合法')
-				} else if (res.data.code === 40003) {
-					this.tipShow('密码不合法')
-				} else if (res.data.code === 40004) {
-					this.tipShow('安全码不合法')
-				} else if (res.data.code === 40005) {
-					this.tipShow('接点人不存在')
-				} else if (res.data.code === 40006) {
-					this.tipShow('市场位置不正确')
-				} else if (res.data.code === 40007) {
-					this.tipShow('会员账号已存在')
-				} else if (res.data.code === 40028) {
-					this.tipShow('邮箱不合法')
-				} else if (res.data.code === 0) {
 					this.tipShow(res.data.msg)
-					this.$router.push({path: '/index'})
+				} else if (res.data.code === 40002) {
+					this.tipShow(res.data.msg)
+				} else if (res.data.code === 40003) {
+					this.tipShow(res.data.msg)
+				} else if (res.data.code === 40004) {
+					this.tipShow(res.data.msg)
+				} else if (res.data.code === 40005) {
+					this.tipShow(res.data.msg)
+				} else if (res.data.code === 40006) {
+					this.tipShow(res.data.msg)
+				} else if (res.data.code === 40007) {
+					this.tipShow(res.data.msg)
+				} else if (res.data.code === 40028) {
+					this.tipShow(res.data.msg)
 				} else if (res.data.code === 10005) {
 					this.tipShow(res.data.msg)
 					this.$router.push({path: '/login'})
-				} else {
-					this.tipShow('操作失败!')
+				} else if (res.data.code === 0) {
+					this.tipShow(res.data.msg)
+					this.$store.commit('emptyTempInfo')
+					this.$router.push({path: '/index'})
 				}
 			})
 		},
 		tipShow (msg) {
 			this.tip = msg
 			this.$refs.promptAlert.show()
+		},
+		saveInfo () {
+			let obj = {
+				account: this.account,
+				nickname: this.nickname,
+				pwd: this.pwd,
+				cfmPwd: this.cfmPwd,
+				safepwd: this.safepwd,
+				cfmSafepwd: this.cfmSafepwd,
+				email: this.email
+			}
+			this.$store.commit('saveRegisterTempInfo', obj)
 		}
 	}
 }

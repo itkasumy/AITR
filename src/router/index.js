@@ -166,6 +166,12 @@ const CoinTransfer = resolve => {
 		resolve(module)
 	})
 }
+const NoOpn = resolve => {
+	import('view/NoOpn/NoOpn').then(module => {
+		resolve(module)
+	})
+}
+
 const routes = [
 	{
 		path: '/',
@@ -311,6 +317,10 @@ const routes = [
 		path: '/cointransfer/:typeid',
 		component: CoinTransfer,
 		name: 'cointransfer'
+	},
+	{
+		path: '/noOpn',
+		component: NoOpn
 	}
 ]
 

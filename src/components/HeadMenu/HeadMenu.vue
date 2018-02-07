@@ -98,17 +98,18 @@ export default {
 					subMenu: [
 						{
 							name: 'ETH交易',
-							path: '/coinexchange'
+							// path: '/coinexchange'
+							path: '/noOpn'
 						}
 					]
 				},
 				{
 					name: '币币交易',
-					path: '/'
+					path: '/noOpn'
 				},
 				{
 					name: '杠杆交易',
-					path: '/'
+					path: '/noOpn'
 				},
 				{
 					name: '个人中心',
@@ -135,11 +136,13 @@ export default {
 							pageRoute: [
 								{
 									name: '现货账户',
-									path: '/assetsmanage/spotaccount'
+									// path: '/assetsmanage/spotaccount'
+									path: '/noOpn'
 								},
 								{
 									name: '杠杆账户',
-									path: '/assetsmanage/leveraccount'
+									// path: '/assetsmanage/leveraccount'
+									path: '/noOpn'
 								}
 							]
 						}
@@ -174,19 +177,23 @@ export default {
 								},
 								{
 									name: '注册子账户',
-									path: '/chonggou'
+									// path: '/chonggou'
+									path: '/noOpn'
 								},
 								{
 									name: '购买配置',
-									path: '/buymatch'
+									// path: '/buymatch'
+									path: '/noOpn'
 								},
 								{
 									name: '解绑子账户',
-									path: '/unbindsubaccount'
+									// path: '/unbindsubaccount'
+									path: '/noOpn'
 								},
 								{
 									name: '解绑母账户',
-									path: '/bindmuaccount'
+									// path: '/bindmuaccount'
+									path: '/noOpn'
 								}
 							]
 						},
@@ -203,23 +210,28 @@ export default {
 								},
 								{
 									name: '收益币',
-									path: '/coininfo'
+									// path: '/coininfo'
+									path: '/noOpn'
 								},
 								{
 									name: '重构币',
-									path: '/coininfo'
+									// path: '/coininfo'
+									path: '/noOpn'
 								},
 								{
 									name: '众筹币',
-									path: '/coininfo'
+									// path: '/coininfo'
+									path: '/noOpn'
 								},
 								{
 									name: '拆分币',
-									path: '/coininfo'
+									// path: '/coininfo'
+									path: '/noOpn'
 								},
 								{
 									name: '消费币',
-									path: '/coininfo'
+									// path: '/coininfo'
+									path: '/noOpn'
 								}
 							]
 						},
@@ -228,11 +240,11 @@ export default {
 							pageRoute: [
 								{
 									name: '产品管理',
-									path: ''
+									path: '/noOpn'
 								},
 								{
 									name: '我的订单',
-									path: ''
+									path: '/noOpn'
 								}
 							]
 						},
@@ -241,15 +253,15 @@ export default {
 							pageRoute: [
 								{
 									name: '公告新闻',
-									path: ''
+									path: '/noOpn'
 								},
 								{
 									name: '发件箱',
-									path: ''
+									path: '/noOpn'
 								},
 								{
 									name: '收件箱',
-									path: ''
+									path: '/noOpn'
 								}
 							]
 						}
