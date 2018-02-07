@@ -67,6 +67,7 @@ export default {
 				}
 				if (res.data.code === 0) {
 					localStorage.setItem('__token__', JSON.stringify(res.data.result))
+					sessionStorage.setItem('__token__', JSON.stringify(res.data.result))
 					this.tip = res.data.msg
 					this.$refs.promptRef.show()
 					this.$router.push('/')

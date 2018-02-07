@@ -1,6 +1,6 @@
 <template>
 	<div class="trad-price">
-		<form action="">
+		<form action="" @submit.prevent="submits">
 			<div class="text">
 				<span>{{types==="buy"?'买入价':'卖出价'}}</span>
 			</div>
@@ -17,22 +17,23 @@
 					<span>合计: </span><span :style="{color: types==='buy'?'#FFAE11':'#4A90E2'}">&nbsp;{{numbers*prices}}&nbsp;</span><span> USDT</span>
 			</div>
 			<div class="submits">
-				<input type="button" class="submit" ref="submit" :value="typess" :style="{background: types==='buy'?'#FFAE11':'#4A90E2'}" @click="submits">
+				<input type="submit" class="submit" ref="submit" :value="typess" :style="{background: types==='buy'?'#FFAE11':'#4A90E2'}">
 			</div>
 		</form>
-		<prompt v-show="showTip" :tip="tip"></prompt>
+		<prompt ref="promptRef" :tip="tip"></prompt>
 	</div>
 </template>
 <script>
 import Prompt from 'components/Prompt/Prompt'
+import {getBalance} from 'util/http'
 
 export default {
 	data () {
 		return {
 			numbers: 0,
 			prices: 0,
-			showTip: false,
-			tip: '5678'
+			tip: '',
+			balance: {}
 		}
 	},
 	components: {
@@ -49,29 +50,79 @@ export default {
 		},
 		number: {
 			type: Number,
-			value: 0
+			value: ''
 		}
 	},
 	methods: {
 		// 提交价格和数量
 		submits () {
-			let obj = {}
-			obj.price = this.prices
-			obj.number = this.numbers
-			this.$emit('tradClick', obj)
+			if (!this.numbers) {
+				this.tip = '卖出量不能为空'
+				this.$refs.promptRef.show()
+				return
+			} else if (this.numbers > this.balance.balance) {
+				this.tip = '余额不足'
+				this.$refs.promptRef.show()
+				return
+			} else if (this.numbers < 0) {
+				this.tip = '卖出量不能为负数'
+				this.$refs.promptRef.show()
+				return
+			} else if (this.numbers > 100000000 || this.numbers <= 0) {
+				this.tip = '请输入0-100000000之间的数字'
+				this.$refs.promptRef.show()
+				return
+			} else if (!/^\d{1,8}(\.\d{0,8})?$/.test(this.numbers)) {
+				this.tip = '卖出量最多只能输入8位小数'
+				this.$refs.promptRef.show()
+				return
+			}
+			this.tip = '暂未开放'
+			this.$refs.promptRef.show()
+			// return
+			// let obj = {}
+			// obj.price = this.prices
+			// obj.number = this.numbers
+			// this.$emit('tradClick', obj)
 		},
 		buyNum (numbers) {
-			if (numbers > 100000000 || numbers < 0) {
-				this.$refs.submit.setAttribute('disabled', true)
+			if (!numbers) {
+				this.tip = '卖出量不能为空'
+				this.$refs.promptRef.show()
+			} else if (numbers > this.balance.balance) {
+				this.tip = '余额不足'
+				this.$refs.promptRef.show()
+				this.numbers = this.balance.balance
+			} else if (numbers < 0) {
+				this.tip = '卖出量不能为负数'
+				this.$refs.promptRef.show()
+			} else if (numbers > 100000000 || numbers <= 0) {
 				this.tip = '请输入0-100000000之间的数字'
-				this.showTip = true
-				setTimeout(() => {
-					this.showTip = false
-				}, 1500)
-			} else {
-				this.$refs.submit.setAttribute('disabled', false)
+				this.$refs.promptRef.show()
+			} else if (!/^\d{1,8}(\.\d{0,8})?$/.test(numbers)) {
+				this.tip = '卖出量最多只能输入8位小数'
+				this.$refs.promptRef.show()
 			}
+		},
+		checkBalance () {
+			getBalance().then(res => {
+				// const allInfo = res.data.result
+				// allInfo.forEach(item => {
+				// 	if (item.currencyName === 'ETH') {
+				// 		this.balance = item
+				// 		return
+				// 	}
+				// })
+				if (res.data.code === 0) {
+					this.balance = res.data.result.filter(item => {
+						return item.currencyName === 'ETH'
+					})[0]
+				}
+			})
 		}
+	},
+	mounted () {
+		this.checkBalance()
 	},
 	computed: {
 		typess () {

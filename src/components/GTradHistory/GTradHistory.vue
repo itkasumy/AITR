@@ -36,8 +36,8 @@ export default {
 		}
 	},
 	created () {
-		console.log(this.types)
-		console.log(this.historydata)
+		// console.log(this.types)
+		// console.log(this.historydata)
 	}
 }
 </script>

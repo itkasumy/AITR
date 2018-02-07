@@ -3,7 +3,7 @@
 		<header class="header">
 			<router-link to="/index"><div class="logo"></div></router-link>
 			<div class="account" v-show="hasLogined" @click="switchaccount">
-				A00000000
+				{{userAccount}}
 			</div>
 			<router-link class="login-btn" v-show="!hasLogined" to="/login">登录</router-link>
 			<div class="menu-btn" @click="switchMenu"></div>
@@ -314,7 +314,9 @@ export default {
 					this.$router.push('/login')
 				}
 				if (res.data.code === 0) {
-					localStorage.setItem('__token__', '')
+					localStorage.removeItem('__token__')
+					sessionStorage.removeItem('__token__')
+					this.$router.push('/login')
 					this.hasLogined = false
 					this.showAccount = false
 				}
@@ -322,8 +324,8 @@ export default {
 		},
 		getSubAccount () {
 			getMuAccount().then(res => {
-				// console.log(res.data)
-				// this.userAccount = res.data.result[0].account
+				// console.log(res.data.result[0].account)
+				this.userAccount = res.data.result[0].account
 				this.account = res.data.result
 			})
 		}

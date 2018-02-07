@@ -6,7 +6,7 @@
 			<ul>
 				<li class="detail-item">
 					<div class="th">
-						<div class="bianhao">会员编号:1</div>
+						<!-- <div class="bianhao">会员编号:1</div> -->
 						<div class="date">2017/12/27 17:51:11</div>
 					</div>
 					<div class="tr">

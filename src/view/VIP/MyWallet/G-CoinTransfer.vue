@@ -35,7 +35,12 @@
 					转让积分数量:
 				</div>
 				<div class="valuess">
-					<input type="number" placeholder="转入转出积分数量" v-model="transformInfo.coinNum">
+					<input
+						type="number"
+						placeholder="转入转出积分数量"
+						@blur="checkIntegral(transformInfo.coinNum)"
+						v-model="transformInfo.coinNum"
+					>
 				</div>
 			</div>
 			<div class="bottom">
@@ -186,23 +191,30 @@ export default {
 				return
 			}
 			if (!this.transformInfo.coinNum) {
-				this.tip = '转出积分数量不能为空'
-				this.$refs.promptAlert.show()
+				this.$refs.promptAlert.show('转账积分数量不能为空')
 				return
-			} else {
-				if (this.transformInfo.coinNum.includes('-') || this.transformInfo.coinNum.includes('.')) {
-					this.tip = '转出积分数量不能为负数或者0或者小数'
-					this.$refs.promptAlert.show()
-					return
-				}
-				let num = parseInt(this.transformInfo.coinNum)
-				if (num >= 100000000) {
-					this.tip = '转出积分数量不能超出1亿'
-					this.$refs.promptAlert.show()
-					return
-				}
+			} else if (!/^[0-9]*[1-9][0-9]*$/.test(this.transformInfo.coinNum) || this.transformInfo.coinNum === 0) {
+				this.$refs.promptAlert.show('转出数量只能为正整数')
+				return
+			} else if (this.transformInfo.coinNum > this.walletData.registerCoin) {
+				this.$refs.promptAlert.show('注册币余额不足')
+				return
+			} else if (this.transformInfo.coinNum >= 100000000) {
+				this.$refs.promptAlert.show('转出积分数量不能超出1亿')
+				return
 			}
 			this.showSafeCodeAlert = true
+		},
+		checkIntegral (integral) {
+			if (!integral) {
+				this.$refs.promptAlert.show('转账积分数量不能为空')
+			} else if (!/^[0-9]*[1-9][0-9]*$/.test(integral) || integral === 0) {
+				this.$refs.promptAlert.show('转出数量只能为正整数')
+			} else if (integral > this.walletData.registerCoin) {
+				this.$refs.promptAlert.show('注册币余额不足')
+			} else if (integral >= 100000000) {
+				this.$refs.promptAlert.show('转出积分数量不能超出1亿')
+			}
 		}
 	}
 }

@@ -18,6 +18,7 @@ import GTradHistory from 'components/GTradHistory/GTradHistory'
 import GTradPart from 'components/GTradPart/GTradPart'
 import GAlert from 'components/GAlert/GAlert'
 import {getETHprice} from '../../api/GApi'
+import {sellCoin} from 'util/http'
 export default {
 	data () {
 		return {
@@ -69,11 +70,16 @@ export default {
 	methods: {
 		options (flag) {
 			console.log(flag)
+			if (flag === 'oks') {
+				sellCoin().then(res => {
+					console.log(res)
+				})
+			}
 			this.isShowDialog = false
 		},
 		tradClick (msg) {
 			this.isShowDialog = true
-			console.log(msg)
+			// console.log(msg)
 			this.numbers = parseFloat(msg.number)
 		},
 		getNewPrc () {

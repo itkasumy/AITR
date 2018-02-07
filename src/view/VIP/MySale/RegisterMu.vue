@@ -15,7 +15,7 @@
 
 				<div class="m-input">
 					<div class="title">登录密码:</div>
-					<input type="password" @blur="checkPwd(pwd)" v-model="pwd" ref="pwd" placeholder="输入6位数字......" />
+					<input type="password" @blur="checkPwd(pwd)" v-model="pwd" ref="pwd" placeholder="输入8位数字或字母......" />
 				</div>
 
 				<div class="m-input">
@@ -25,7 +25,7 @@
 
 				<div class="m-input">
 					<div class="title">安全码:</div>
-					<input type="password" @blur="checkSafepwd(safepwd)" v-model="safepwd" ref="safepwd" placeholder="输入6位数字......" />
+					<input type="password" @blur="checkSafepwd(safepwd)" v-model="safepwd" ref="safepwd" placeholder="输入8位数字或字母......" />
 				</div>
 
 				<div class="m-input">
@@ -70,6 +70,7 @@
 
 <script>
 import {registerMu, getBalance} from 'util/http'
+import {calcCharLen} from 'util/util'
 
 import HeadMenu from 'components/HeadMenu/HeadMenu'
 import Prompt from 'components/Prompt/Prompt'
@@ -125,7 +126,7 @@ export default {
 				this.tipShow('会员姓名只允许输入汉字或者字母')
 				return false
 			}
-			if (nickname.length < 4 || nickname.length > 16) {
+			if (calcCharLen(nickname) < 4 || calcCharLen(nickname) > 16) {
 				this.tipShow('字符长度需要在4-16之间')
 				return false
 			}
@@ -135,7 +136,7 @@ export default {
 				this.tipShow('登录密码只允许输入字母或者数字')
 				return false
 			}
-			if (pwd.length < 8 || pwd.length > 18) {
+			if (pwd.length < 8 || pwd.length > 16) {
 				this.tipShow('只允许输入8-16位英文或数字')
 				return false
 			}
@@ -152,13 +153,13 @@ export default {
 				this.tipShow('安全码只允许输入字母或者数字')
 				return false
 			}
-			if (safepwd.length < 8 || safepwd.length > 18) {
+			if (safepwd.length < 8 || safepwd.length > 16) {
 				this.tipShow('只允许输入8-16位英文或数字')
 				return false
 			}
 		},
 		checkCfmSafepwd (cfmSafepwd) {
-			let safeword = this.$refs.cfmSafepwd.value
+			let safeword = this.$refs.safepwd.value
 			if (safeword !== cfmSafepwd) {
 				this.tipShow('两次输入的安全码不同')
 				return false
@@ -203,7 +204,6 @@ export default {
 				this.tipShow('邮箱不能为空')
 				return false
 			}
-			console.log('22')
 			let params = new URLSearchParams()
 			params.append('account', this.$refs.account.value)
 			params.append('nickname', this.$refs.nickname.value)
@@ -235,6 +235,8 @@ export default {
 				} else if (res.data.code === 10005) {
 					this.tipShow(res.data.msg)
 					this.$router.push({path: '/login'})
+				} else {
+					this.tipShow('操作失败!')
 				}
 			})
 		},

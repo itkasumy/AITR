@@ -176,6 +176,7 @@ const routes = [
 		component: Index
 	},
 	{
+		name: 'login',
 		path: '/login',
 		component: Login
 	},
@@ -313,6 +314,21 @@ const routes = [
 	}
 ]
 
-export default new Router({
+const router = new Router({
 	routes
 })
+
+router.beforeEach((to, from, next) => {
+	if (to.path !== '/login') {
+		localStorage.setItem('lastVisitPath', to.path)
+		if (!sessionStorage.getItem('__token__')) {
+			router.push({ name: 'login' })
+		} else {
+			next()
+		}
+	} else {
+		next()
+	}
+})
+
+export default router
