@@ -1,5 +1,5 @@
 import axios from 'axios'
-const url = 'http://47.75.6.39:8092/api/v1/'
+const url = 'http://47.52.133.247:8092/api/v1/'
 export const getToken = function () {
 	let info = localStorage.getItem('__token__')
 	if (info) {
@@ -10,6 +10,12 @@ export const getToken = function () {
 		access_token: info.accessToken
 	}
 }
+// export const getToken = () => {
+// 	return {
+// 		access_account: 'A00000000DD1AB58B0CED8CF559B1667A9773B1AF',
+// 		access_token: '053D80B02DA3378413F6988A76CD9CC0'
+// 	}
+// }
 // 充值显示订单信息
 export var orderDataUrl = `${url}cashWallet/rechargeCoin`
 // 订单号显示订单信息

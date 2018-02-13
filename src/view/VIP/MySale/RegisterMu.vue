@@ -222,29 +222,38 @@ export default {
 			params.append('sup_account', this.$refs.supAccount.value)
 			params.append('position', this.$refs.position.value === '左区' ? 0 : 1)
 			registerMu(params).then(res => {
-				if (res.data.code === 40001) {
+				// if (res.data.code === 40001) {
+				// 	this.tipShow(res.data.msg)
+				// } else if (res.data.code === 40002) {
+				// 	this.tipShow(res.data.msg)
+				// } else if (res.data.code === 40003) {
+				// 	this.tipShow(res.data.msg)
+				// } else if (res.data.code === 40004) {
+				// 	this.tipShow(res.data.msg)
+				// } else if (res.data.code === 40005) {
+				// 	this.tipShow(res.data.msg)
+				// } else if (res.data.code === 40006) {
+				// 	this.tipShow(res.data.msg)
+				// } else if (res.data.code === 40007) {
+				// 	this.tipShow(res.data.msg)
+				// } else if (res.data.code === 40028) {
+				// 	this.tipShow(res.data.msg)
+				// } else if (res.data.code === 10005) {
+				// 	this.tipShow(res.data.msg)
+				// 	this.$router.push({path: '/login'})
+				// } else if (res.data.code === 0) {
+				// 	this.tipShow(res.data.msg)
+				// 	this.$store.commit('emptyTempInfo')
+				// 	this.$router.push({path: '/index'})
+				// } else if (res.data.code === 40008) {
+				// 	this.tipShow(res.data.msg)
+				// }
+				if (res.data.code === 0) {
 					this.tipShow(res.data.msg)
-				} else if (res.data.code === 40002) {
-					this.tipShow(res.data.msg)
-				} else if (res.data.code === 40003) {
-					this.tipShow(res.data.msg)
-				} else if (res.data.code === 40004) {
-					this.tipShow(res.data.msg)
-				} else if (res.data.code === 40005) {
-					this.tipShow(res.data.msg)
-				} else if (res.data.code === 40006) {
-					this.tipShow(res.data.msg)
-				} else if (res.data.code === 40007) {
-					this.tipShow(res.data.msg)
-				} else if (res.data.code === 40028) {
-					this.tipShow(res.data.msg)
-				} else if (res.data.code === 10005) {
-					this.tipShow(res.data.msg)
-					this.$router.push({path: '/login'})
-				} else if (res.data.code === 0) {
-					this.tipShow(res.data.msg)
-					this.$store.commit('emptyTempInfo')
+					this.$store.commit('emptyTempInf')
 					this.$router.push({path: '/index'})
+				} else {
+					this.tipShow(res.data.msg)
 				}
 			})
 		},

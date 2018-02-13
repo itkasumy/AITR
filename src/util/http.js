@@ -1,7 +1,7 @@
 import axios from 'axios'
 // import {getCookie} from './util'
 
-axios.defaults.baseURL = 'http://47.75.6.39:8092/api/v1'
+axios.defaults.baseURL = 'http://47.52.133.247:8092/api/v1'
 
 // var token = JSON.parse(localStorage.getItem('__token__'))
 

@@ -15,7 +15,7 @@
 								<div class="close-price add" v-if="item.market.close - item.market.open > 0">{{item.market.close.toFixed(2)}}</div>
 								<div class="close-price min" v-else-if="item.market.close - item.market.open < 0">{{item.market.close.toFixed(2)}}</div>
 								<div class="close-price" v-else>{{item.market.close.toFixed(2)}}</div>
-								<router-link to="/coinexchange" class="to-trade" v-if="item.onTrade">去交易</router-link>
+								<router-link to="/noOpn" class="to-trade" v-if="item.onTrade">去交易</router-link>
 							</li>
 							<li class="item-price">
 								<div class="price-high">{{item.market.high.toFixed(2)}}</div>

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
+import axios from 'axios'
 Vue.use(Router)
 
 const Index = resolve => {
@@ -339,6 +339,18 @@ router.beforeEach((to, from, next) => {
 	} else {
 		next()
 	}
+})
+axios.interceptors.response.use(function (response) {
+	if (response.data.code === 10005) {
+		alert('login out time')
+		localStorage.clear()
+		router.replace({
+			path: '/login'
+		})
+	}
+	return response
+}, function (error) {
+	return Promise.reject(error)
 })
 
 export default router
